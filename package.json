@@ -4,6 +4,7 @@
     "start": "electron ."
   },
   "dependencies": {
-    "electron": "^33.2.1"
+    "electron": "^33.2.1",
+    "socket.io": "^4.8.1"
   }
 }

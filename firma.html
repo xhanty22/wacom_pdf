@@ -11,12 +11,30 @@
 <body>
     <!-- Barra de opciones -->
     <div class="options-container">
-        <a onclick="window.back()" class="btn btn-primary" title="Regresar"><img src="assets/img/back.png" width="30"></a>
-        <a onclick="window.print()" class="btn btn-primary" title="Imprimir"><img src="assets/img/print.png" width="30"></a>
-        <input type="text" id="search" placeholder="Buscar...">
-        <a onclick="window.search()" class="btn btn-primary" title="Buscar"><img src="assets/img/search.png" width="30"></a>
-        <a onclick="window.up()" class="btn btn-primary" title="Buscar"><img src="assets/img/up.png" width="30"></a>
-        <a onclick="window.down()" class="btn btn-primary" title="Buscar"><img src="assets/img/down.png" width="30"></a>
+        <div class="options">
+            <a onclick="window.back()" class="btn btn-primary" title="Regresar"><img src="assets/img/back.png"
+                    width="30"></a>
+            <!-- <a onclick="window.print()" class="btn btn-primary" title="Imprimir"><img src="assets/img/print.png" width="30"></a> -->
+            <input type="text" id="search" placeholder="Buscar...">
+            <a onclick="window.search()" id="btn-search" class="btn btn-primary" title="Buscar"><img
+                    src="assets/img/search.png" width="30"></a>
+            <a onclick="window.closeSearch()" id="btn-close" class="btn btn-primary d-none" title="Buscar"><img
+                    src="assets/img/close.png" width="30"></a>
+            <a onclick="window.upSearch()" id="up-search" class="btn btn-primary d-none" title="Siguiente"><img
+                    src="assets/img/up.png" width="30"></a>
+            <p id="search-text">0/0</p>
+            <a onclick="window.downSearch()" id="down-search" class="btn btn-primary d-none" title="Anterior"><img
+                    src="assets/img/down.png" width="30"></a>
+            <p id="pagination-text">1/2 Páginas</p>
+            <a onclick="window.addZoom()" class="btn btn-primary" title="Aumentar Zoom"><img src="assets/img/add.png"
+                    width="30"></a>
+            <a onclick="window.lessZoom()" class="btn btn-primary" title="Dismunuir Zoom"><img src="assets/img/less.png"
+                    width="30"></a>
+        </div>
+        <div class="save">
+            <a onclick="window.save()" class="btn btn-primary" title="Guardar"><img src="assets/img/save.png"
+                    width="30"></a>
+        </div>
     </div>
     <br>
     <br>
@@ -485,6 +503,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="scripts/firma.js"></script>
 </body>
 

@@ -13,19 +13,25 @@
 
 body {
   background: rgb(233, 233, 233, 0.5);
+  font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
 }
 
 .content {
+  display: flex;
+  justify-content: center;
+}
+
+.content-page {
   background: #fff;
   padding: 2em;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  width: 210mm;
   /* Ancho de una hoja A4 */
-  height: 297mm;
+  width: 210mm;
   /* Alto de una hoja A4 */
+  height: 297mm;
   margin: 0 auto 2em auto;
   overflow: hidden;
   page-break-after: always;
@@ -38,11 +44,23 @@ p {
 .options-container {
   position: fixed;
   display: flex;
-  gap: 25px;
   background: white;
   width: 100%;
-  padding: 9px 20px 9px 20px;
+  padding: 6px 20px 6px 20px;
   border-bottom: 1px solid #ccc;
+  font-family: "Courier New", Courier, monospace;
+
+  .options {
+    width: 80%;
+    display: flex;
+    gap: 22px;
+  }
+
+  .save {
+    width: 20%;
+    display: flex;
+    justify-content: center;
+  }
 
   #search {
     width: 300px;
@@ -53,6 +71,19 @@ p {
     transition: 0.5s;
   }
 
+  #search-text {
+    height: 0px;
+    display: flex;
+    align-items: center;
+    display: none;
+  }
+
+  #pagination-text {
+    height: 0px;
+    display: flex;
+    align-items: center;
+  }
+
   a {
     cursor: pointer;
   }
@@ -60,5 +91,17 @@ p {
   i {
     color: white;
     font-size: 1.5em;
+  }
+}
+
+.d-none {
+  display: none;
+}
+
+.highlight {
+  background-color: yellow;
+
+  &.current {
+    background-color: rgba(255, 166, 0, 0.674);
   }
 }

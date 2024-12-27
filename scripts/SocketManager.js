@@ -17,7 +17,7 @@ const initSocketManager = async () => {
   const socket = io(`http://${IP}:${PORT}`, {
     auth:{
       name: "Tablet Wacom 1",
-      asigTo: "James Rudas",
+      asigTo: "1004163783",
     }
   });
 
@@ -37,5 +37,9 @@ const initSocketManager = async () => {
      contrato.style.display = "block";
      contrato.querySelector("p").textContent = e;
   })
+
+  socket.on("viewerContract", (data) => {
+    window.location.href = 'firma.html'
+  });
 
 };

@@ -3,7 +3,7 @@ body {
   padding: 0;
   width: 100vw;
   height: 100vh;
-  background-image: url("./background_image.jpg");
+  background-image: url("../img/background_image.jpg");
   position: relative;
   font-family: "system-ui";
   overflow: hidden;

@@ -23,7 +23,7 @@ app.whenReady().then(() => {
 
   // Crea la ventana en la posición de la pantalla detectada
   mainWindow = new BrowserWindow({
-    autoHideMenuBar: true,
+    autoHideMenuBar: true, // Oculta la barra de menú
     x: displayToUse.bounds.x, // Coordenada X de la pantalla
     y: displayToUse.bounds.y, // Coordenada Y de la pantalla
     width: displayToUse.bounds.width,

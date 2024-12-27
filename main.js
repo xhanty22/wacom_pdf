@@ -1,6 +1,11 @@
 const { app, BrowserWindow, screen } = require("electron");
 const path = require("path");
 
+// Habilitar recarga automática
+require('electron-reload')(__dirname, {
+  electron: path.join(__dirname, 'node_modules', '.bin', 'electron')
+});
+
 let mainWindow;
 
 app.whenReady().then(() => {
@@ -36,8 +41,6 @@ app.whenReady().then(() => {
       createWindow();
     }
   });
-  
-  
 });
 
 app.on("window-all-closed", () => {

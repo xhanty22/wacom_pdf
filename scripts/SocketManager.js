@@ -1,29 +1,41 @@
-import { io } from "https://cdn.socket.io/4.8.1/socket.io.esm.min.js";
+import { io } from "./SocketClient_IO.js";
 
-let isSocketReady = false;
-
-document.addEventListener("DOMContentLoaded", () => {initSocketManager()
-  demoController();
+document.addEventListener("DOMContentLoaded", () => {
+  initSocketManager();
 });
 
 const initSocketManager = async () => {
+
+  const statusLabel = document.querySelector(".status-indicator__text");
+  const statusIndicator = document.querySelector(".status-indicator__circle");
+
   // SOCKETS
   const IP = "127.0.0.1";
-  const PORT = "8080";
+  const PORT = "3000";
 
-   const socket = io(`ws://${IP}:${PORT}`);
+  // Conectar al servidor WebSocket
+  const socket = io(`http://${IP}:${PORT}`, {
+    auth:{
+      name: "Tablet Wacom 1",
+      asigTo: "James Rudas",
+    }
+  });
 
-   socket.on("connect", () => {
-     console.log('CONNET USING IO');
-   });
+  socket.on("connect", () => {
+    statusLabel.textContent = "Connected";
+    statusIndicator.style.backgroundColor = "green";
+  });
 
-   const demoController = () => {
-     const btn = document.querySelector("button");
-     const input = document.querySelector("input");
-   
-     btn.addEventListener("click", () => {
-        socket.emit("hello", { message: input.value });
-     });
-   };
+  socket.on("disconnect", () => {
+    statusLabel.textContent = "Disconnected";
+    statusIndicator.style.backgroundColor = "red";
+  });
+
+  socket.on("showContract", (e) => {
+     document.querySelector("form").style.display = "none";
+     const contrato = document.querySelector(".contrato");
+     contrato.style.display = "block";
+     contrato.querySelector("p").textContent = e;
+  })
+
 };
-

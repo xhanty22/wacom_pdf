@@ -8,11 +8,12 @@
   </head>
   <body>
 
-    <form>
-      <label for="">Emitir algo</label>
-      <input type="text" id="emitir" name="emitir">
-      <button type="button" >Enviar</button>
-    </form>
+    <div class="status-indicator">
+      <div class="status-indicator__circle"></div>
+      <div class="status-indicator__text">Disconnected</div>
+    </div>
+
+
     
     <script type="module" src="./scripts/SocketManager.js"></script>
 

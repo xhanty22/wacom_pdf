@@ -18,14 +18,11 @@ app.whenReady().then(() => {
 
   // Crea la ventana en la posición de la pantalla detectada
   mainWindow = new BrowserWindow({
-    autoHideMenuBar: false,
+    autoHideMenuBar: true,
     x: displayToUse.bounds.x, // Coordenada X de la pantalla
     y: displayToUse.bounds.y, // Coordenada Y de la pantalla
     width: displayToUse.bounds.width,
     height: displayToUse.bounds.height,
-    webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
-    },
   });
 
   // FullScreen

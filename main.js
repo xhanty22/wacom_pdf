@@ -2,9 +2,9 @@ const { app, BrowserWindow, screen } = require("electron");
 const path = require("path");
 
 // Habilitar recarga automática
-require('electron-reload')(__dirname, {
-  electron: path.join(__dirname, 'node_modules', '.bin', 'electron')
-});
+// require('electron-reload')(__dirname, {
+//   electron: path.join(__dirname, 'node_modules', '.bin', 'electron')
+// });
 
 let mainWindow;
 
@@ -23,7 +23,7 @@ app.whenReady().then(() => {
 
   // Crea la ventana en la posición de la pantalla detectada
   mainWindow = new BrowserWindow({
-    autoHideMenuBar: false, // Oculta la barra de menú
+    autoHideMenuBar: true, // Oculta la barra de menú
     x: displayToUse.bounds.x, // Coordenada X de la pantalla
     y: displayToUse.bounds.y, // Coordenada Y de la pantalla
     width: displayToUse.bounds.width,

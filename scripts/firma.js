@@ -159,10 +159,46 @@ document.getElementById("search").addEventListener("keyup", function (event) {
 });
 
 // Paginación del documento
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
+    // Falta la páginación del documento
     const content = document.querySelector(".content");
     const pageHeight = 297 * 3.77953; // Altura de una página A4 en px (1mm = 3.77953px)
     const pageMargin = 20 * 3.77953; // Margen entre páginas en px
     let page = 1;
-    
 });
+
+// Canvas para la firma
+const canvas = document.getElementById("draw-canvas");
+const ctx = canvas.getContext("2d");
+let isDrawing = false;
+
+// Función para empezar a dibujar (usando el mouse o el lápiz)
+canvas.addEventListener('mousedown', (e) => {
+    // Inicia el dibujo cuando el mouse o lápiz tocan el canvas
+    isDrawing = true;
+    ctx.beginPath();
+    ctx.moveTo(e.offsetX, e.offsetY); // Obtener las coordenadas
+});
+
+// Función para dibujar cuando se mueve el lápiz o el mouse
+canvas.addEventListener('mousemove', (e) => {
+    if (isDrawing) {
+        ctx.lineTo(e.offsetX, e.offsetY); // Dibuja en las nuevas coordenadas
+        ctx.stroke(); // Traza la línea
+    }
+});
+
+// Función para parar de dibujar
+canvas.addEventListener('mouseup', () => {
+    isDrawing = false;
+});
+
+// Si se suelta el lápiz (en pantallas táctiles, podría no funcionar como se espera)
+canvas.addEventListener('mouseleave', () => {
+    isDrawing = false;
+});
+
+// Función para limpiar el canvas
+function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}

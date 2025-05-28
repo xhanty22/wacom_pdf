@@ -13,9 +13,11 @@
 
 body {
   background: rgb(233, 233, 233, 0.5);
-  font-family: Arial, sans-serif;
+  font-family: 'Poppins';
   margin: 0;
   padding: 0;
+  cursor: none;
+  user-select: none;
 }
 
 .content {
@@ -31,10 +33,14 @@ body {
   /* Ancho de una hoja A4 */
   width: 210mm;
   /* Alto de una hoja A4 */
-  /* height: 297mm; */
-  margin: 0 auto 2em auto;
+  height: 297mm;
   overflow: hidden;
   page-break-after: always;
+  margin: 1em; 
+  text-align: justify; 
+  font-family: 'Poppins'; 
+  font-size: 14px;
+  margin: 6em auto 2em auto;
 }
 
 p {
@@ -48,7 +54,7 @@ p {
   width: 100%;
   padding: 6px 20px 6px 20px;
   border-bottom: 1px solid #ccc;
-  font-family: "Courier New", Courier, monospace;
+  font-family: 'Poppins';
 
   .options {
     width: 80%;
@@ -114,4 +120,8 @@ p {
 
 .clear-button {
   color: #000;
+}
+
+canvas {
+    touch-action: none;
 }

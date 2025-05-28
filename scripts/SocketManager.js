@@ -10,28 +10,30 @@ const initSocketManager = async () => {
   const statusIndicator = document.querySelector(".status-indicator__circle");
 
   // SOCKETS
-  const IP = "127.0.0.1";
-  const PORT = "3000";
+  const IP = "172.29.110.238";
+  const PORT = "8594";
 
   // Conectar al servidor WebSocket
   const socket = io(`http://${IP}:${PORT}`, {
     auth:{
-      name: "Tablet Wacom 1",
+      name: "Tablet Topaz",
       asigTo: "1004163783",
     }
   });
 
   socket.on("connect", () => {
-    statusLabel.textContent = "Connected";
+    statusLabel.textContent = "Conectado";
     statusIndicator.style.backgroundColor = "green";
   });
 
   socket.on("disconnect", () => {
-    statusLabel.textContent = "Disconnected";
+    statusLabel.textContent = "Desconectado";
     statusIndicator.style.backgroundColor = "red";
   });
 
   socket.on("showContract", (e) => {
+    console.log(e);
+    
      document.querySelector("form").style.display = "none";
      const contrato = document.querySelector(".contrato");
      contrato.style.display = "block";
@@ -39,6 +41,8 @@ const initSocketManager = async () => {
   })
 
   socket.on("viewerContract", (data) => {
+    console.log(data);
+    
     window.location.href = 'firma.html'
   });
 

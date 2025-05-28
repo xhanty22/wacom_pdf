@@ -4,8 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="assets/css/firma.css">
-    <title>COMPLEMENTOS HUMANOS</title>
+    <title>Complementos Humanos</title>
 </head>
 
 <body>
@@ -16,7 +21,7 @@
                     width="30"></a>
             <!-- <a onclick="window.print()" class="btn btn-primary" title="Imprimir"><img src="assets/img/print.png" width="30"></a> -->
             <input type="text" id="search" placeholder="Buscar...">
-            <a onclick="window.search()" id="btn-search" class="btn btn-primary" title="Buscar"><img
+            <!-- <a onclick="window.search()" id="btn-search" class="btn btn-primary" title="Buscar"><img
                     src="assets/img/search.png" width="30"></a>
             <a onclick="window.closeSearch()" id="btn-close" class="btn btn-primary d-none" title="Buscar"><img
                     src="assets/img/close.png" width="30"></a>
@@ -24,7 +29,7 @@
                     src="assets/img/up.png" width="30"></a>
             <p id="search-text">0/0</p>
             <a onclick="window.downSearch()" id="down-search" class="btn btn-primary d-none" title="Anterior"><img
-                    src="assets/img/down.png" width="30"></a>
+                    src="assets/img/down.png" width="30"></a> -->
             <p id="pagination-text">1/2 Páginas</p>
             <a onclick="window.addZoom()" class="btn btn-primary" title="Aumentar Zoom"><img src="assets/img/add.png"
                     width="30"></a>
@@ -36,467 +41,44 @@
                     width="30"></a>
         </div>
     </div>
-    <br>
-    <br>
-    <br>
-    <br>
     <div class="content">
-        <div style="margin: 1em; text-align: justify; font-family: Arial, Helvetica, sans-serif; font-size: 13px;" class="content-page">
-            <div>
-                @@logoCompania
-            </div>
-            <div id="title" align="center">
-                <b>CONTRATO DE APRENDICES SENA</b>
-            </div>
-            <div style="margin-top: 1em;">
-                Entre los suscritos a saber <b>@@nombreFirmaRepresentante</b>, mayor de edad, con domicilio en la ciudad
-                de
-                Bogotá,
-                identificado con el número de cédula de ciudadanía <b>@@idFirmaRepresentante</b>, obrando como
-                representante
-                de
-                la
-                EMPRESA
-                PATROCINADORA @@desNomina. N.I.T. @@idCliente quien para los efectos del presente Contrato se
-                denominará EMPRESA PATROCINADORA, y <b>@@nombres</b>, @@desEdad, identificado
-                con @@desTipoIdentificacion No @@nit quien para los efectos del presente Contrato se denominará el
-                <b>APRENDIZ</b>, se suscribe el presente Contrato de Aprendizaje, conforme a lo preceptuado por la Ley
-                789
-                de 2002,
-                Decreto 1072 de 2015, y demás normas que los aclaren, modifiquen o complementen, y de acuerdo con las
-                cláusulas que a continuación se desarrollan:
-            </div>
-            <div style="margin-top: 1em;">
-                <b>CLÁUSULA PRIMERA.- OBJETO DEL CONTRATO.</b> El presente contrato tiene como objeto facilitar la
-                formación
-                profesional metódica y completa del APRENDIZ en la especialidad de <b>@@apEspecialidadCurso</b> La
-                etapa
-                lectiva, es decir, la correspondiente a la formación profesional y metódica del APRENDIZ será impartida
-                por
-                LA ENTIDAD DE FORMACIÓN de conformidad con lo dispuesto en el Artículo 37 de la Ley 789 de 2003, Decreto
-                1072 de 2015, y demás normas que los aclaren, modifiquen o complementen, y la etapa práctica se
-                desarrollará
-                en las instalaciones de LA EMPRESA PATROCINADORA. Las partes suscriben el presente contrato de
-                aprendizaje
-                como una forma especial dentro del Derecho Laboral mediante la cual una persona natural desarrolla
-                formación
-                teórica práctica en una ENTIDAD DE FORMACIÓN legalmente autorizada, a cambio de que ésta le proporcione
-                los
-                medios para adquirir formación profesional metódica y completa requerida en el oficio, actividad u
-                ocupación, bajo la tutela de una EMPRESA PATROCINADORA.
-            </div>
-            <div style="margin-top: 1em;">
-                <b>CLÁUSULA SEGUNDA.- DURACIÓN Y ETAPA DE LA FORMACIÓN.</b> El presente contrato tiene una duración de
-                @@duracionContrato comprendida entre el @@fechaIngresoC fecha de iniciación de la formación, y el
-                @@fechaFinalC fecha de terminación, tiempo que se encuentra distribuido en períodos de enseñanza y
-                períodos
-                de
-                práctica sucesivos y alternos de la siguiente manera: 1. Un período de enseñanza de
-                @@diasLec @@mesesLec @@desDuracionLec que se
-                cumplirá entre el @@fechaInicioLecC y el @@fechaFinLecC, y 2. Un período de práctica que se
-                ejecutará entre @@fechaInicioProC y el @@fechaFinProC <b>PARÁGRAFO PRIMERO.</b> - El presente contrato
-                puede ser modificado en su duración parcial total, cuando las normas generales de LA ENTIDAD DE
-                FORMACIÓN
-                determinen variación de los contenidos del programa, caso en el cual y en la misma proporción se
-                reducirá el
-                período de práctica, a fin de conservar la alternabilidad fijada en la cláusula segunda del presente
-                contrato. <b>PARÁGRAFO SEGUNDO.</b> Durante las etapas prácticas EL APRENDIZ no podrá exceder de 48
-                horas
-                semanales
-                y se cumplirá de acuerdo con la jornada laboral existente en las instalaciones de LA EMPRESA
-                PATROCINADORA.
-                Durante las etapas de enseñanza deberá cumplir el horario que LA ENTIDAD DE FORMACIÓN tenga establecido
-                para
-                los distintos programas. <b>PARÁGRAFO TERCERO.</b> - De acuerdo con lo dispuesto en el Artículo 30 de la
-                Ley
-                789 de
-                2002, Decreto 1072 de 2015, y demás normas que los aclaren, modifiquen o complementen, por lo cual este
-                contrato no podrá tener una duración mayor de dos (2) años.
-            </div>
-
-            <div style="margin-top: 1em;">
-                <b>CLÁUSULA TERCERA: OBLIGACIONES.</b> 1) POR PARTE DE LA EMPRESA.- En virtud del presente contrato la
-                EMPRESA
-                PATROCINADORA deberá: a) Facilitar al APRENDIZ los medios para que tanto en las fases lectiva y
-                práctica,
-                reciba formación profesional integral, metódica y completa en la ocupación u oficio materia del presente
-                Contrato. b) Diligenciar y reportar al respectivo Centro de Formación Profesional Integral, las
-                evaluaciones
-                y certificaciones del APRENDIZ en su fase práctica del aprendizaje. c) Pagar mensualmente al APRENDIZ,
-                por
-                concepto de apoyo de sostenimiento económico para el aprendizaje, durante su etapa lectiva el 50% de un
-                (1)
-                Salario Mínimo Mensual Legal Vigente que va a partir del <b>@@fechaInicioLecC</b> hasta el
-                <b>@@fechaFinLecC</b>
-                y durante su etapa productiva el 100% de un (1) Salario Mínimo Mensual Legal Vigente, el cual va a
-                partir
-                del <b>@@fechaInicioProC</b> hasta el <b>@@fechaFinProC PARÁGRAFO.</b>- Este apoyo de sostenimiento no
-                constituye salario en forma alguna ni será factor del mismo para ningún efecto, ni podrá ser regulado a
-                través de convenios o contratos colectivos o fallos arbítrales recaídos en una negociación colectiva.
-                <b>PÁRAGRAFO SEGUNDO:</b> Las Partes acuerdan de manera voluntaria e irrevocable que la forma de pago
-                del
-                apoyo de
-                sostenimiento pactado en este Contrato, será a través de consignación bancaria en una cuenta cuyo
-                titularidad será del APRENDIZ, la cual por mutuo acuerdo será una cuenta de ahorros en @@desBanco. El
-                APRENDIZ acepta desde ya que en el evento en que se cause algún valor por cuota de manejo de la cuenta
-                bancaria, y cualquier otro gasto que se llegue a generar por la Entidad Bancaria como consecuencia de la
-                existencia y utilización de la misma, será asumido integralmente por el APRENDIZ.
-            </div>
-            <div>@@saltoPagina</div>
-
-            <div>
-                @@logoCompania
-            </div>
-            <div>
-                d) Proporcionar a EL
-                APRENDIZ la información necesaria y los espacios físicos para realizar del proceso de práctica y dar
-                cumplimiento a los programas establecidos
-                e) Designar una persona para que respalde y facilite las acciones de práctica de EL APRENDIZ.f) Durante
-                la
-                fase lectiva del contrato, el APRENDIZ sólo estará afiliado al
-                sistema de seguridad social en salud y la cotización será cubierta plenamente por la EMPRESA
-                PATROCINADORA,
-                sobre la base de un salario mínimo legal mensual vigente, según lo previsto por el artículo 5 del
-                Decreto
-                933 de 2003, y demás normas concordantes que lo aclaren, modifiquen o complementen. Durante la fase
-                práctica
-                o productiva el aprendiz estará afiliado al Sistema general de seguridad social en salud, y al Sistema
-                de
-                Riesgos Laborales por la Administradora de Riesgos Laborales (ARL) a la cual se encuentre afiliada la
-                EMPRESA PATROCINADORA sobre la base de un salario mínimo legal mensual vigente, igualmente según lo
-                establecido por el antes citado artículo 5 y el Decreto 055 de 2015, y demás normas concordantes que lo
-                aclaren, modifiquen o complementen. <b> 2). POR PARTE DEL APRENDIZ </b> - El APRENDIZ, por su parte, se
-                compromete en
-                virtud del presente contrato a: a) Concurrir puntualmente a las clases durante los períodos de enseñanza
-                para así recibir la Formación Profesional Integral a que se refiere el presente Contrato, someterse a
-                los
-                reglamentos y normas establecidas por el respectivo Centro de Formación, y poner toda diligencia y
-                aplicación para lograr el mayor rendimiento en su Formación. b) Concurrir puntualmente al lugar asignado
-                por
-                la EMPRESA PATROCINADORA para desarrollar su formación en la fase práctica, durante el periodo
-                establecido
-                para el mismo, en las actividades que se le encomiende y que guarde relación con la especialidad de su
-                Formación, cumpliendo con las indicaciones que le señale la EMPRESA PATROCINADORA. En todo caso la
-                intensidad horaria que debe cumplir el APRENDIZ durante la etapa práctica en la EMPRESA PATROCINADORA,
-                no
-                podrá exceder de ocho (8) horas (número de horas de práctica EMPRESA PATROCINADOR para cada curso de
-                formación).
-                c) Cuando por algún motivo de fuerza mayor EL APRENDIZ no pueda recibir su formación teórica, en todo
-                caso
-                deberá cumplir su jornada práctica con LA EMPRESA PATROCINADORA; d) Acatar fielmente las políticas
-                institucionales de LA EMPRESA PATROCINADORA, en especial las relacionadas con el Código de Ética, el
-                Sistema
-                de Prevención de Ilícitos, Seguridad de la Información, Uso de la red de Internet y correo electrónico y
-                uso
-                de la tecnología y herramientas de usuario. Para este efecto EL APRENDIZ autoriza desde ya expresamente
-                a LA
-                EMPRESA PATROCINADORA para que pueda monitorear el uso que éste haga de los sistemas de información,
-                incluido el acceso a la cuenta de correo electrónico suministrada por LA EMPRESA PATROCINADORA, así como
-                del
-                registro de visitas a sitios de Internet. e) Igualmente, y en cumplimiento del propósito antes dicho, EL
-                APRENDIZ se obliga a conocer y a mantenerse actualizado sobre toda comunicación que al respecto publique
-                LA
-                EMPRESA PATROCINADORA. f) Cumplir con el deber de confidencialidad respecto de la información
-                suministrada
-                por LA EMPRESA. g) Procurar el cuidado integral de su salud y participar en las indicaciones e
-                instrucciones
-                que sobre el Sistema General de Seguridad y Salud en el Trabajo le sean impartidas por la EMPRESA. h)Dar
-                cumplimiento a las recomendaciones en materia de prevención que le sean indicadas por parte del EMPRESA
-                para
-                el desarrollo dentro de su práctica. i) Utilizar los elementos de protección personal, si para el
-                desarrollo
-                de la práctica son necesarios. j) Informar a la EMPRESA y LA UNIVERSIDAD la ocurrencia de incidentes,
-                accidentes o de enfermedades causadas por la etapa de práctica.
-            </div>
-            <div style="margin-top: 1em;">
-                <b>CLÁUSULA CUARTA. - SUPERVISIÓN.</b> - LA EMPRESA PATROCINADORA podrá supervisar al APRENDIZ en el
-                respectivo
-                centro de formación de LA ENTIDAD DE FORMACIÓN. A su vez, LA ENTIDAD DE FORMACIÓN supervisará a EL
-                APRENDIZ
-                en el desarrollo de su actividad en las instalaciones de LA EMPRESA PATROCINADORA para verificar que
-                esta
-                corresponda con el programa de la especialidad para la cual se está formando.
-            </div>
-            <div style="margin-top: 1em;">
-                <b>CLÁUSULA QUINTA: CESE DE ACTIVIDADES.</b> - Cuando por motivos de fuerza mayor impidan que EL
-                APRENDIZ
-                cumpla la
-                parte lectiva de su formación integral profesional en LA ENTIDAD DE FORMACIÓN, deberá cumplir con las
-                actividades encomendadas por LA EMPRESA PATROCINADORA para desarrollar la fase práctica de su formación.
-                Así
-                mismo, cuando por algún motivo se presente el cese legal de actividades en LA EMPRESA PATROCINADORA, el
-                contrato se suspenderá durante dicho período.
-            </div>
-            <div style="margin-top: 1em;">
-                <b>CLÁUSULA SEXTA: CAUSALES DE TERMINACIÓN DEL CONTRATO DE APRENDIZAJE:</b> El presente contrato podrá
-                darse
-                por
-                terminado por las causas que se enuncian a continuación: a) Por mutuo acuerdo entre las partes; b) Por
-                el
-                vencimiento de del término de duración del contrato; c) Cuando EL APRENDIZ incurra en cualquier falta
-                que dé
-                lugar a la expulsión o suspensión de acuerdo con el reglamento o normas de LA ENTIDAD DE FORMACIÓN; d)
-                Cuando EL APRENDIZ no presente el rendimiento adecuado en la práctica, a juicio de LA EMPRESA
-                PATROCINADORA
-                o de LA ENTIDAD DE FORMACIÓN; e) Cuando EL APRENDIZ no asista puntualmente a las prácticas, sin excusa
-                suficiente, a juicio de LA EMPRESA PATROCINADORA, por más de dos (2) veces en un periodo de 30 días;
-            </div>
-
-            <div>@@saltoPagina</div>
-            <div>
-                @@logoCompania
-            </div>
-            <div>
-                f)
-                Cuando EL APRENDIZ incumpla cualquier instrucción, reglamento o norma de LA EMPRESA PATROCINADORA o
-                incurra
-                en conductas prohibidas o en las faltas graves contempladas en el reglamento Interno de Trabajo o demás
-                reglamentos o normas internas de LA EMPRESA PATROCINADORA, sin que por ello se entienda la existencia de
-                vínculo laboral;
-                g) Cuando exista fraude o engaño por parte de EL APRENDIZ en cualquiera de los aspectos de
-                la práctica; h) Cuando EL APRENDIZ deje de entregar los informes sobre la práctica, establecidos por la
-                entidad que imparte LA FORMACIÓN o por LA EMPRESA PATROCINADORA;
-                i) Cuando EL APRENDIZ abandone en forma injustificada la práctica durante dos días consecutivos; j)
-                Cuando
-                EL APRENDIZ cometa un delito o contravención en perjuicio de los intereses de LA EMPRESA PATROCINADORA o
-                contra su vida, honra y bienes, o contra sus representantes o trabajadores; k) Cuando EL APRENDIZ revele
-                cualquier secreto o acto reservado relacionado con los negocios de LA EMPRESA PATROCINADORA o de sus
-                clientes. l) Cuando EL APRENDIZ tenga desavenencias con los trabajadores o representantes de LA EMPRESA
-                PATROCINADORA. m) Cuando EL APRENDIZ llegue embriagado o bajo el efecto de estupefacientes o drogas
-                enervantes, o ingiera bebidas embriagantes, estupefacientes o drogas enervantes en el sitio de la
-                práctica,
-                aún por la primera vez; n) El incumplimiento de cualquiera de las obligaciones previstas para cada una
-                de
-                las partes en le presente documento o en los reglamentos, procedimientos y/o políticas de la EMPRESA
-                PATROCINADORA y o) La decisión unilateral de cualquiera de las partes, siempre y cuando la parte
-                interesada
-                notifique por escrito su decisión de terminación a la otra parte con una antelación no menor de quince
-                (15)
-                días hábiles. En este evento no habrá lugar a indemnización alguna. P) Las demás consagradas en la Ley.
-            </div>
-            <div style="margin-top: 1em;">
-                <b>CLÁUSULA SÉPTIMA: EXCLUSIÓN DE RELACIÓN LABORAL</b> . De acuerdo con lo previsto en el artículo 30 y
-                siguientes
-                de la Ley 789 de 2002 se excluye la existencia de un contrato de trabajo entre LA EMPRESA PATROCINADORA
-                y EL
-                APRENDIZ. En ese sentido la EMPRESA PATROCINADORA no se encuentra obligada al pago de salarios o
-                prestaciones sociales de ninguna naturaleza ni a realizar o ejecutar ninguna otra obligación que se
-                derive o
-                pueda derivarse de un contrato de trabajo.
-            </div>
-            <div style="margin-top: 1em;">
-                <b>CLÁUSULA OCTAVA. DECLARACIÓN JURAMENTADA.</b> EL APRENDIZ. Declara bajo la gravedad de juramento que
-                no
-                se
-                encuentra ni ha estado vinculado con LA EMPRESA o con otras empresas en una relación de aprendizaje Así
-                mismo, declara que no se encuentra ni ha estado vinculado mediante una relación laboral con LA EMPRESA.
-            </div>
-            <div style="margin-top: 1em;">
-                <b>CLÁUSULA NOVENA: CONFIDENCIALIDAD:</b> Durante la vigencia del contrato y con posterioridad a su
-                retiro
-                EL
-                APRENDIZ se obliga a mantener la confidencialidad de toda la información que llegue a su conocimiento en
-                virtud del contrato suscrito, comprometiéndose a no comunicar a terceros, ni usar en su propio provecho,
-                las
-                informaciones de naturaleza reservada que tengan o lleguen a conocer en razón o con ocasión de su
-                práctica
-                profesional y cuya divulgación pueda ocasionar perjuicios a LA EMPRESA. Así, se considera falta grave
-                por
-                parte del APRENDIZ, la elaboración de cualquier tipo de copia no autorizada de cualquier documento o
-                archivo
-                contenido en papeles, cintas magnetofónicas, videos, discos de computadora o cualquier otro medio, así
-                como,
-                su sustracción sin la autorización de su inmediato superior, o el revelar la información por cualquier
-                clase
-                de medio; Tiene especial carácter de reservados todo lo que tenga que ver con la situación financiera de
-                la
-                Empresa, su producción, procesos, operaciones comerciales, financieras, bancarias, administrativas,
-                técnicas, base de datos de toda clase, fórmulas y procedimientos industriales, técnicos, comerciales,
-                entre
-                otros . La violación de esta obligación se califica como falta grave, esto acarreará las
-                correspondientes
-                consecuencias, civiles, comerciales, penales, disciplinarias sin perjuicio de las otras acciones legales
-                y
-                extralegales a que haya lugar. Lo anterior, también aplica al uso adecuado de claves de usuario a
-                sistemas
-                de información y del software corporativo.
-            </div>
-
-            <div style="margin-top: 1em;">
-                Esta obligación, cobija entre otros, los siguientes temas: La protección de los datos e información de
-                LA
-                EMPRESA, datos personales e información sensible de sus clientes, proveedores, usuarios y empleados;
-                incluyendo información técnica, financiera, comercial, estratégica y cualquier información relacionada
-                con
-                las operaciones de negocios presentes y futuros, o condiciones financieras de LA EMPRESA; lista de
-                clientes,
-                inversionistas, empleados, modelos de operación, procesos, algoritmos, programas, investigaciones,
-                relaciones de negocios, pronósticos de negocios, planes de mercadeo toda la información entregada
-                directa o
-                indirectamente y elaborada y procesada y/o que se produzca en el desarrollo de alguna actividad en LA
-                EMPRESA y cualquier información revelada sobre terceras personas; bien sea, que dicha información sea
-                escrita, oral, visual, o que esté contenida en medios magnéticos o cualquier otro medio que en el futuro
-                existiere. Complementariamente y para los efectos del presente contrato,
-            </div>
-            <div>@@saltoPagina</div>
-
-            <div>
-                @@logoCompania
-            </div>
-            <div style="margin-top: 2em;">
-                EL APRENDIZ declara saber que las
-                bases de datos corporativas que llegue a conocer y/o le sean entregadas incluso antes de su contrato,
-                para
-                el desarrollo de sus actividades tienen igualmente, el carácter de información confidencial y se
-                utilizarán
-                protegiendo la confidencialidad entre los diferentes negocios de LA EMRESA y entre los proveedores, los
-                usuarios y EL APRENDIZ es tal como lo dispone el literal g) del artículo 4 de la Ley 1266 de 2008 y la
-                Ley
-                1581 de 2012 y todas aquellas demás normas que las complementen o modifiquen en el futuro. De igual
-                manera,
-                EL APRENDIZ declara tener conocimiento que las cuentas de usuario y claves de acceso a los sistemas de
-                información que le sean asignados en desarrollo de sus funciones, son de uso exclusivo, personal e
-                intransferible, debiendo mantener bajo custodia las mismas, información que sólo podrá ser utilizada
-                para el desarrollo de las actividades autorizadas
-                por LA EMPRESA, aceptando que conoce que existen normas que con relación a los software, se aplican en
-                Colombia
-                en materia de propiedad intelectual, derechos de autor y
-                las implicaciones que las mismas tienen, comprendiendo que es su responsabilidad como APRENDIZ,
-                abstenerse
-                de
-                utilizar Software que no sea de propiedad de LA EMPRESA y/o que no esté licenciado por terceros para el
-                ejercicio de las funciones y contribuciones propias del cargo que realizo y se obliga a no utilizar
-                programas de Freeware, ni descargar los mismos en los equipos de cómputo asignados y/o de propiedad de
-                LA
-                EMPRESA. Lo anterior, en cumplimiento de las normas de propiedad intelectual a las que como EL APRENDIZ
-                se
-                encuentra sometido al numeral 4 del Artículo 1 de la Ley 603 de 2000 y que éstas están sujetas a
-                revisión
-                por parte de las personas designadas en LA EMPRESA y/o los terceros que se autoricen con el fin de
-                verificar
-                el cumplimiento de dichas normas. Así mismo, se obliga a no revelar y/o divulgar a terceros y demás
-                características del lugar donde se desarrolle la PRÁCTICA PROFESIONAL y/o áreas restringidas, los
-                controles
-                que se tienen establecidos, así como la información a la que tenga acceso durante su permanencia en
-                dichos
-                lugares. Cualquier trasgresión o incumplimiento total o parcial de las obligaciones adquiridas mediante
-                este
-                contrato se consideran como falta grave y por lo tanto, constituyen justa causa para que LA EMPRESA de
-                por
-                terminado unilateralmente el contrato de Aprendizaje, sin perjuicio de que se adelanten las acciones
-                penales
-                y civiles a que haya lugar, en consideración a lo estipulado en las Leyes 1273/09, el literal g) del
-                artículo 4 de la Ley 1266 de 2008 y la Ley 1581 de 2012 o demás normas que lo modifiquen, aclaren o
-                complementen. Las obligaciones citadas anteriormente, se mantendrán vigentes durante la vigencia del
-                contrato y aún después de la finalización del mismo, siendo deber del APRENDIZ entregar a su tutor
-                encargado
-                toda la información, sea o no confidencial, que tenga en su poder con relación a LA EMPRESA, datos
-                personales e información sensible de sus clientes, proveedores y usuarios, las claves o usuarios de
-                dominio
-                de los aplicativos o software asignados durante su vinculación como APRENDIZ.
-                Excepto en aquellos casos en que sea necesario por razón de la práctica, o en el caso en que la Empresa
-                lo
-                autorice previamente por escrito, el APRENDIZ no divulgará a nadie, ni usará fuera de la practica ni
-                después
-                de
-                terminado el mismo, informaciones confidenciales de tipo técnico o de negocios de la Empresa o de sus
-                compañías
-                afiliadas. Esta misma obligación se extenderá a cualquier información proveniente de terceras personas
-                que
-                la
-                empresa o sus compañías afiliadas tengan la obligación de mantener confidencialmente y de la cual tenga
-                conocimiento EL APRENDIZ en el curso de su trabajo. EL APRENDIZ se obliga a que las informaciones
-                técnicas o
-                de
-                negocios conocidas por EL APRENDIZ de un anterior empresa o de terceras personas, que comunique a la
-                empresa
-                y a
-                sus compañías afiliadas, estará limitada a aquellas que hubiere obtenido legítimamente el EL APRENDIZ
-                sin
-                restricción de confidencialidad.
-            </div>
-            <div style="margin-top: 1em;">
-                <b>CLÁUSULA DÉCIMA -USO DE INTERNET:</b> Se acuerda que forme parte integrante de este contrato "LAS
-                POLITICAS DE
-                USO DE INTERNET" con sus capítulos sobre "Uso adecuado de los recursos", "Seguridad informática",
-                "Acceso a
-                internet", y la "política para el manejo de correo electrónico" que tiene la EMPRESA PATROCINADORA, y
-                cualquier otra que implemente en el futuro, y que obran en documento independiente compuesto de cuatro
-                folios que EL APRENDIZ declara haber leído y conocer integralmente. Calificando su incumplimiento como
-                falta
-                grave.
-            </div>
-            <div style="margin-top: 3em;">
-                <b> CLÁUSULA DÉCIMA PRIMERA: AUTORIZACIÓN DE RECOLECCIÓN Y TRATAMIENTO DE DATOS PERSONALES.</b> Con el
-                fin
-                de dar
-                cumplimiento a la ley 1581 de 2012 y el Decreto 1377 de 2013, el APRENDIZ manifiesta: 1. Que ha sido
-                notificado y entiende la política de privacidad de LA EMPRESA PATROCINADORA, y los fines con los cuales
-                se
-                solicitan sus datos personales, datos de familiares incluidos los niños, niñas y adolescentes en el
-                primer
-                grado de consanguinidad, registros fotográficos y registro biométrico (huella), que corresponden a: a)
-                El
-                desarrollo de su objeto social; b) La ejecución de la relación de aprendizaje que nos vincula, lo que
-                supone
-                el ejercicio de sus derechos y obligaciones de carácter contractual, dentro de los que están, pero sin
-                limitarse a ellos, la atención de solicitudes, la generación de certificados y constancias, la
-                afiliación a
-                las entidades
-            </div>
-            <div>@@saltoPagina</div>
-
-            <div>
-                @@logoCompania
-            </div>
-            <div>
-                del sistema de protección social a que haya lugar, la realización de actividades de bienestar,
-                entre otros, c) El levantamiento de registros contables, d) Los reportes a autoridades de control y
-                vigilancia, e) La adopción de medidas tendientes a la prevención de actividades ilícitas, f) Otros fines
-                administrativos, comerciales y de contacto. EL APRENDIZ manifiesta que los datos suministrados son
-                ciertos,
-                que no ha omitido ni alterado información alguna, y es consciente que la falsedad u omisión de datos
-                puede
-                generar consecuencias civiles y penales. La autorización incluye el procesamiento, recolección,
-                almacenamiento, uso, circulación, supresión, actualización, transmisión y/o transferencia de los datos
-                suministrados.
-                EL APRENDIZ ha sido informado de sus derechos de conocer, actualizar, rectificar y suprimir,
-                así como de la posibilidad de acceder en cualquier momento a los datos suministrados y el procedimiento
-                para
-                solicitar su corrección, actualización o supresión de las bases de datos de LA EMPRESA PATROCINADORA.
-                LA EMPRESA PATROCINADORA teniendo en cuenta del estado de la tecnología, los datos almacenados y los
-                riesgos
-                a
-                que puedan estar expuestos, ha adoptado las medidas de seguridad, administrativas, técnicas y físicas,
-                para
-                proteger los datos personales contra daño, pérdida, alteración, destrucción o el uso, acceso o
-                tratamiento
-                no autorizado.
-                La presente autorización se hace extensiva a quien represente los derechos de LA EMPRESA PATROCINADORA,
-                a
-                quien éste contrate para el ejercicio de los mismos, o a quien éste ceda sus derechos, sus obligaciones
-                o
-                posición contractual a cualquier título, en relación con los derechos y obligaciones que como EMPRESA
-                PATROCINADORA le corresponden. La presente autorización permanecerá vigente, hasta tanto sea revocada
-                según
-                los eventos previstos en la ley, sin que pueda ser revocada, ni total ni parcialmente, en vigencia del
-                contrato de aprendizaje.
-            </div>
-            <div style="margin-top: 1em;">
-                <b>CLÁUSULA DÉCIMA SEGUNDA: IDENTIFICACIÓN Y DOMICILIO:</b> El APRENDIZ adquiere la obligación de
-                informar
-                inmediatamente los cambios de dirección de su domicilio, si no lo hiciere, el último registrado en
-                talento
-                humano o como en el futuro se denomine se considerara como el actual y LA EMPRESA se exonera de
-                cualquier
-                responsabilidad enviando los documentos y notificaciones a la dirección registrada en el formato de Hoja
-                de
-                vida o en los medios establecidos en la EMPRESA para su permanente actualización. De acuerdo a lo
-                establecido en la Ley 789/02, Decreto 1072 de 2015, y demás normas que los aclaren, modifiquen o
-                complementen, el incumplimiento de esta obligación de mantener actualizado su domicilio, dados sus
-                efectos,
-                se califica como falta grave.
-            </div>
+        <div class="content-page">
+            EL APRENDIZ declara saber que las
+            bases de datos corporativas que llegue a conocer y/o le sean entregadas incluso antes de su contrato,
+            para
+            el desarrollo de sus actividades tienen igualmente, el carácter de información confidencial y se
+            utilizarán
+            protegiendo la confidencialidad entre los diferentes negocios de LA EMRESA y entre los proveedores, los
+            usuarios y EL APRENDIZ es tal como lo dispone el literal g) del artículo 4 de la Ley 1266 de 2008 y la
+            Ley
+            1581 de 2012 y todas aquellas demás normas que las complementen o modifiquen en el futuro. De igual
+            manera,
+            EL APRENDIZ declara tener conocimiento que las cuentas de usuario y claves de acceso a los sistemas de
+            información que le sean asignados en desarrollo de sus funciones, son de uso exclusivo, personal e
+            intransferible, debiendo mantener bajo custodia las mismas, información que sólo podrá ser utilizada
+            para el desarrollo de las actividades autorizadas
+            por LA EMPRESA, aceptando que conoce que existen normas que con relación a los software, se aplican en
+            Colombia
+            en materia de propiedad intelectual, derechos de autor y
+            las implicaciones que las mismas tienen, comprendiendo que es su responsabilidad como APRENDIZ,
+            abstenerse
+            de
+            utilizar Software que no sea de propiedad de LA EMPRESA y/o que no esté licenciado por terceros para el
+            ejercicio de las funciones y contribuciones propias del cargo que realizo y se obliga a no utilizar
+            programas de Freeware, ni descargar los mismos en los equipos de cómputo asignados y/o de propiedad de
+            LA
+            EMPRESA. Lo anterior, en cumplimiento de las normas de propiedad intelectual a las que como EL APRENDIZ
+            se
+            encuentra sometido al numeral 4 del Artículo 1 de la Ley 603 de 2000 y que éstas están sujetas a
+            revisión
+            por parte de las personas designadas en LA EMPRESA y/o los terceros que se autoricen con el fin de
+            verificar
+            el cumplimiento de dichas normas. Así mismo, se obliga a no revelar y/o divulgar a terceros y demás
+            características del lugar donde se desarrolle la PRÁCTICA PROFESIONAL y/o áreas restringidas, los
+            controles
+            que se tienen establecidos, así como la información a la que tenga acceso durante su permanencia en
+            dichos
+            lugares.
             <div style="margin-top: 5em;">
                 <!-- @@firmasContrato -->
                 <canvas id="draw-canvas" height="200" width="400" class="signature-pad"></canvas>

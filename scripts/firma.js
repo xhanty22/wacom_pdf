@@ -11,8 +11,7 @@ function back() {
         if (result.isConfirmed) {
             location.href = "index.html";
         }
-    }
-    );
+    });
 }
 
 async function search() {
@@ -143,7 +142,22 @@ async function lessZoom() {
 }
 
 async function save() {
-    Swal.fire('¡Alerta!', 'Guardado con éxito', 'success');
+    Swal.fire({
+        title: '¡Alerta!',
+        text: '¿Está seguro de que desea terminar?',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Sí',
+        confirmButtonColor: '#d41717',
+        cancelButtonText: 'No'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire('¡Alerta!', 'Guardado con éxito', 'success');
+            setTimeout(() => {
+                location.href = "index.html";
+            }, 1000);
+        }
+    });
 }
 
 // Evento para buscar y resaltar el texto al presionar Enter
@@ -158,43 +172,84 @@ document.getElementById("search").addEventListener("keyup", function (event) {
     }
 });
 
-// Paginación del documento
+// Apenas carga el documento
 document.addEventListener("DOMContentLoaded", function () {
     // Falta la páginación del documento
     const content = document.querySelector(".content");
     const pageHeight = 297 * 3.77953; // Altura de una página A4 en px (1mm = 3.77953px)
     const pageMargin = 20 * 3.77953; // Margen entre páginas en px
     let page = 1;
+
+    // Poner zoom en 130% apenas carga
+    content.style.zoom = "130%";
 });
 
 // Canvas para la firma
 const canvas = document.getElementById("draw-canvas");
 const ctx = canvas.getContext("2d");
+ctx.lineCap = "round";
+ctx.lineJoin = "round";
+ctx.lineWidth = 2; // O el valor que prefieras
+ctx.strokeStyle = "#000"; // Color del trazo
 let isDrawing = false;
 
-// Función para empezar a dibujar (usando el mouse o el lápiz)
+// --- SOPORTE PARA MOUSE ---
 canvas.addEventListener('mousedown', (e) => {
-    // Inicia el dibujo cuando el mouse o lápiz tocan el canvas
     isDrawing = true;
     ctx.beginPath();
-    ctx.moveTo(e.offsetX, e.offsetY); // Obtener las coordenadas
+    ctx.moveTo(e.offsetX, e.offsetY);
 });
 
-// Función para dibujar cuando se mueve el lápiz o el mouse
 canvas.addEventListener('mousemove', (e) => {
     if (isDrawing) {
-        ctx.lineTo(e.offsetX, e.offsetY); // Dibuja en las nuevas coordenadas
-        ctx.stroke(); // Traza la línea
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.stroke();
     }
 });
 
-// Función para parar de dibujar
 canvas.addEventListener('mouseup', () => {
     isDrawing = false;
 });
 
-// Si se suelta el lápiz (en pantallas táctiles, podría no funcionar como se espera)
 canvas.addEventListener('mouseleave', () => {
+    isDrawing = false;
+});
+
+function getCanvasPos(touch, canvas) {
+    const rect = canvas.getBoundingClientRect();
+    // Ajusta las coordenadas al tamaño real del canvas
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    return {
+        x: (touch.clientX - rect.left) * scaleX,
+        y: (touch.clientY - rect.top) * scaleY
+    };
+}
+
+// --- SOPORTE PARA TÁCTIL/LÁPIZ ---
+canvas.addEventListener('touchstart', (e) => {
+    if (e.touches.length > 1) return; // Ignora multitouch
+    e.preventDefault();
+    isDrawing = true;
+    const touch = e.touches[0];
+    const pos = getCanvasPos(touch, canvas);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+});
+
+canvas.addEventListener('touchmove', (e) => {
+    if (e.touches.length > 1) return;
+    e.preventDefault();
+    if (isDrawing) {
+        const touch = e.touches[0];
+        const pos = getCanvasPos(touch, canvas);
+        ctx.lineTo(pos.x, pos.y);
+        ctx.stroke();
+    }
+});
+
+canvas.addEventListener('touchend', (e) => {
+    e.preventDefault();
     isDrawing = false;
 });
 

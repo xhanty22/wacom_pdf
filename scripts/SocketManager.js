@@ -11,7 +11,9 @@ const initSocketManager = async () => {
 
   // SOCKETS
   const IP = "172.29.110.238";
+  // const IP = "127.0.0.1";
   const PORT = "8594";
+  // const PORT = "9800";
 
   // Conectar al servidor WebSocket
   const socket = io(`http://${IP}:${PORT}`, {
@@ -41,9 +43,10 @@ const initSocketManager = async () => {
   })
 
   socket.on("viewerContract", (data) => {
-    console.log(data);
-    
     window.location.href = 'firma.html'
   });
+
+
+  window.socket = socket;
 
 };

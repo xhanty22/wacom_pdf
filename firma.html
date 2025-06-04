@@ -1,27 +1,34 @@
 <!DOCTYPE html>
 <html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/firma.css">
+      href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/firma.css" />
     <title>Complementos Humanos</title>
-</head>
+  </head>
 
-<body>
+  <body>
+    
+    <div class="status-indicator">
+      <div class="status-indicator__circle"></div>
+      <div class="status-indicator__text">Desconectado</div>
+    </div>
+
     <!-- Barra de opciones -->
     <div class="options-container">
-        <div class="options">
-            <a onclick="window.back()" class="btn btn-primary" title="Regresar"><img src="assets/img/back.png"
-                    width="30"></a>
-            <!-- <a onclick="window.print()" class="btn btn-primary" title="Imprimir"><img src="assets/img/print.png" width="30"></a> -->
-            <input type="text" id="search" placeholder="Buscar...">
-            <!-- <a onclick="window.search()" id="btn-search" class="btn btn-primary" title="Buscar"><img
+      <div class="options">
+        <a onclick="window.back()" class="btn btn-primary" title="Regresar"
+          ><img src="assets/img/back.png" width="30"
+        /></a>
+        <!-- <a onclick="window.print()" class="btn btn-primary" title="Imprimir"><img src="assets/img/print.png" width="30"></a> -->
+        <input type="text" id="search" placeholder="Buscar..." />
+        <!-- <a onclick="window.search()" id="btn-search" class="btn btn-primary" title="Buscar"><img
                     src="assets/img/search.png" width="30"></a>
             <a onclick="window.closeSearch()" id="btn-close" class="btn btn-primary d-none" title="Buscar"><img
                     src="assets/img/close.png" width="30"></a>
@@ -30,65 +37,83 @@
             <p id="search-text">0/0</p>
             <a onclick="window.downSearch()" id="down-search" class="btn btn-primary d-none" title="Anterior"><img
                     src="assets/img/down.png" width="30"></a> -->
-            <p id="pagination-text">1/2 Páginas</p>
-            <a onclick="window.addZoom()" class="btn btn-primary" title="Aumentar Zoom"><img src="assets/img/add.png"
-                    width="30"></a>
-            <a onclick="window.lessZoom()" class="btn btn-primary" title="Dismunuir Zoom"><img src="assets/img/less.png"
-                    width="30"></a>
-        </div>
-        <div class="save">
-            <a onclick="window.save()" class="btn btn-primary" title="Guardar"><img src="assets/img/save.png"
-                    width="30"></a>
-        </div>
+        <p id="pagination-text">1/2 Páginas</p>
+        <a
+          onclick="window.addZoom()"
+          class="btn btn-primary"
+          title="Aumentar Zoom"
+          ><img src="assets/img/add.png" width="30"
+        /></a>
+        <a
+          onclick="window.lessZoom()"
+          class="btn btn-primary"
+          title="Dismunuir Zoom"
+          ><img src="assets/img/less.png" width="30"
+        /></a>
+      </div>
+      <div class="save">
+        <a onclick="window.save()" class="btn btn-primary" title="Guardar"
+          ><img src="assets/img/save.png" width="30"
+        /></a>
+      </div>
     </div>
     <div class="content">
-        <div class="content-page">
-            EL APRENDIZ declara saber que las
-            bases de datos corporativas que llegue a conocer y/o le sean entregadas incluso antes de su contrato,
-            para
-            el desarrollo de sus actividades tienen igualmente, el carácter de información confidencial y se
-            utilizarán
-            protegiendo la confidencialidad entre los diferentes negocios de LA EMRESA y entre los proveedores, los
-            usuarios y EL APRENDIZ es tal como lo dispone el literal g) del artículo 4 de la Ley 1266 de 2008 y la
-            Ley
-            1581 de 2012 y todas aquellas demás normas que las complementen o modifiquen en el futuro. De igual
-            manera,
-            EL APRENDIZ declara tener conocimiento que las cuentas de usuario y claves de acceso a los sistemas de
-            información que le sean asignados en desarrollo de sus funciones, son de uso exclusivo, personal e
-            intransferible, debiendo mantener bajo custodia las mismas, información que sólo podrá ser utilizada
-            para el desarrollo de las actividades autorizadas
-            por LA EMPRESA, aceptando que conoce que existen normas que con relación a los software, se aplican en
-            Colombia
-            en materia de propiedad intelectual, derechos de autor y
-            las implicaciones que las mismas tienen, comprendiendo que es su responsabilidad como APRENDIZ,
-            abstenerse
-            de
-            utilizar Software que no sea de propiedad de LA EMPRESA y/o que no esté licenciado por terceros para el
-            ejercicio de las funciones y contribuciones propias del cargo que realizo y se obliga a no utilizar
-            programas de Freeware, ni descargar los mismos en los equipos de cómputo asignados y/o de propiedad de
-            LA
-            EMPRESA. Lo anterior, en cumplimiento de las normas de propiedad intelectual a las que como EL APRENDIZ
-            se
-            encuentra sometido al numeral 4 del Artículo 1 de la Ley 603 de 2000 y que éstas están sujetas a
-            revisión
-            por parte de las personas designadas en LA EMPRESA y/o los terceros que se autoricen con el fin de
-            verificar
-            el cumplimiento de dichas normas. Así mismo, se obliga a no revelar y/o divulgar a terceros y demás
-            características del lugar donde se desarrolle la PRÁCTICA PROFESIONAL y/o áreas restringidas, los
-            controles
-            que se tienen establecidos, así como la información a la que tenga acceso durante su permanencia en
-            dichos
-            lugares.
-            <div style="margin-top: 5em;">
-                <!-- @@firmasContrato -->
-                <canvas id="draw-canvas" height="200" width="400" class="signature-pad"></canvas>
-                <p><a href="javascript:void(0);" class="clear-button" onclick="window.clearCanvas()">Limpiar</a></p>
-            </div>
+      <div class="content-page">
+        EL APRENDIZ declara saber que las bases de datos corporativas que llegue
+        a conocer y/o le sean entregadas incluso antes de su contrato, para el
+        desarrollo de sus actividades tienen igualmente, el carácter de
+        información confidencial y se utilizarán protegiendo la confidencialidad
+        entre los diferentes negocios de LA EMRESA y entre los proveedores, los
+        usuarios y EL APRENDIZ es tal como lo dispone el literal g) del artículo
+        4 de la Ley 1266 de 2008 y la Ley 1581 de 2012 y todas aquellas demás
+        normas que las complementen o modifiquen en el futuro. De igual manera,
+        EL APRENDIZ declara tener conocimiento que las cuentas de usuario y
+        claves de acceso a los sistemas de información que le sean asignados en
+        desarrollo de sus funciones, son de uso exclusivo, personal e
+        intransferible, debiendo mantener bajo custodia las mismas, información
+        que sólo podrá ser utilizada para el desarrollo de las actividades
+        autorizadas por LA EMPRESA, aceptando que conoce que existen normas que
+        con relación a los software, se aplican en Colombia en materia de
+        propiedad intelectual, derechos de autor y las implicaciones que las
+        mismas tienen, comprendiendo que es su responsabilidad como APRENDIZ,
+        abstenerse de utilizar Software que no sea de propiedad de LA EMPRESA
+        y/o que no esté licenciado por terceros para el ejercicio de las
+        funciones y contribuciones propias del cargo que realizo y se obliga a
+        no utilizar programas de Freeware, ni descargar los mismos en los
+        equipos de cómputo asignados y/o de propiedad de LA EMPRESA. Lo
+        anterior, en cumplimiento de las normas de propiedad intelectual a las
+        que como EL APRENDIZ se encuentra sometido al numeral 4 del Artículo 1
+        de la Ley 603 de 2000 y que éstas están sujetas a revisión por parte de
+        las personas designadas en LA EMPRESA y/o los terceros que se autoricen
+        con el fin de verificar el cumplimiento de dichas normas. Así mismo, se
+        obliga a no revelar y/o divulgar a terceros y demás características del
+        lugar donde se desarrolle la PRÁCTICA PROFESIONAL y/o áreas
+        restringidas, los controles que se tienen establecidos, así como la
+        información a la que tenga acceso durante su permanencia en dichos
+        lugares.
+        <div style="margin-top: 5em">
+          <!-- @@firmasContrato -->
+          <canvas
+            id="draw-canvas"
+            height="200"
+            width="400"
+            class="signature-pad"
+          ></canvas>
+          <p>
+            <a
+              href="javascript:void(0);"
+              class="clear-button"
+              onclick="window.clearCanvas()"
+              >Limpiar</a
+            >
+          </p>
         </div>
+      </div>
     </div>
+
+    <script type="module" src="./scripts/SocketManager.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="scripts/firma.js"></script>
-</body>
-
+  </body>
 </html>

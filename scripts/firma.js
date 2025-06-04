@@ -142,22 +142,46 @@ async function lessZoom() {
 }
 
 async function save() {
-    Swal.fire({
-        title: '¡Alerta!',
-        text: '¿Está seguro de que desea terminar?',
-        icon: 'info',
-        showCancelButton: true,
-        confirmButtonText: 'Sí',
-        confirmButtonColor: '#d41717',
-        cancelButtonText: 'No'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            Swal.fire('¡Alerta!', 'Guardado con éxito', 'success');
-            setTimeout(() => {
-                location.href = "index.html";
-            }, 1000);
-        }
-    });
+    // Validar si el canvas tiene algo dibujado
+    if (ctx.getImageData(0, 0, canvas.width, canvas.height).data.some(value => value !== 0)) {
+        Swal.fire({
+            title: '¡Alerta!',
+            text: '¿Está seguro de que desea terminar?',
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Sí',
+            confirmButtonColor: '#d41717',
+            cancelButtonText: 'No'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire('¡Alerta!', 'Guardado con éxito', 'success');
+
+                if(window.socket){
+                    // Enviar la firma al servidor
+                    const signatureData = canvas.toDataURL("image/png").split(',')[1]; // Solo base64
+                    
+                    window.socket.emit("saveSignature", {
+                        signature: signatureData,
+                        asigTo: "1004163783" // Cambia esto por el ID del destinatario real
+                    });
+
+                    // Redirigir al index.html
+                    setTimeout(() => {
+                        location.href = "index.html";
+                    }, 1000);
+
+                }
+            }
+        });
+    } else {
+        Swal.fire({
+            title: '¡Error!',
+            text: 'Debe dibujar una firma antes de guardar.',
+            icon: 'error',
+            confirmButtonText: 'Aceptar',
+            confirmButtonColor: '#d41717'
+        });
+    }
 }
 
 // Evento para buscar y resaltar el texto al presionar Enter

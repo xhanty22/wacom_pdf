@@ -13,7 +13,7 @@
 
 body {
   background: rgb(233, 233, 233, 0.5);
-  font-family: 'Poppins';
+  font-family: "Poppins";
   margin: 0;
   padding: 0;
   cursor: none;
@@ -36,9 +36,9 @@ body {
   height: 297mm;
   overflow: hidden;
   page-break-after: always;
-  margin: 1em; 
-  text-align: justify; 
-  font-family: 'Poppins'; 
+  margin: 1em;
+  text-align: justify;
+  font-family: "Poppins";
   font-size: 14px;
   margin: 6em auto 2em auto;
 }
@@ -54,7 +54,7 @@ p {
   width: 100%;
   padding: 6px 20px 6px 20px;
   border-bottom: 1px solid #ccc;
-  font-family: 'Poppins';
+  font-family: "Poppins";
 
   .options {
     width: 80%;
@@ -123,5 +123,29 @@ p {
 }
 
 canvas {
-    touch-action: none;
+  touch-action: none;
+}
+
+body {
+  position: relative;
+  .status-indicator {
+    user-select: none;
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    border-radius: 20px;
+    background-color: rgba(0, 0, 0, 0.171);
+    color: white;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    > .status-indicator__circle {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: red;
+    }
+  }
 }

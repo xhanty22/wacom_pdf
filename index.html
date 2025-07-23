@@ -5,18 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Complementos Humanos</title>
     <link rel="stylesheet" href="assets/css/style.css" />
-    <style>
-      body {
-        cursor: none;
-      }
-    </style>
   </head>
-
   <body>
+    <!-- Carrusel de fondo -->
+    <div class="carousel">
+      <img src="assets/img/home/one.jpg" class="active" />
+      <img src="assets/img/home/two.jpg" />
+    </div>
+
+    <!-- Indicador de estado -->
     <div class="status-indicator">
       <div class="status-indicator__circle"></div>
       <div class="status-indicator__text">Desconectado</div>
     </div>
+
     <script type="module" src="./scripts/SocketManager.js"></script>
+    <script src="./scripts/home/carousel.js"></script>
   </body>
 </html>

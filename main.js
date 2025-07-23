@@ -44,7 +44,7 @@ app.whenReady().then(() => {
   mainWindow.setFullScreen(true);
 
   // Carga el archivo HTML principal
-  mainWindow.loadFile("index.html");
+  mainWindow.loadFile("firma.html");
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {

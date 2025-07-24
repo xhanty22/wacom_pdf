@@ -1,15 +1,249 @@
-body {
-  cursor: none;
-  margin: 0;
-  padding: 0;
-  width: 100vw;
-  height: 100vh;
-  position: relative;
-  font-family: "system-ui";
-  overflow: hidden;
+/** Customizar el scroll */
+::-webkit-scrollbar {
+  width: 10px;
 }
 
-/* Carrusel */
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+
+:root {
+  --primary-color: #ff6704;
+  --color-boton-success: #28a745;
+  --color-check-signed: #28a745;
+}
+
+body {
+  background: rgb(233, 233, 233, 0.5);
+  font-family: "Poppins";
+  margin: 0;
+  padding: 0;
+  cursor: none;
+  user-select: none;
+}
+
+.inicio {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100vh;
+}
+
+.content {
+  display: flex;
+  justify-content: center;
+}
+
+.content-page {
+  background: #fff;
+  padding: 2em;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  /* Ancho de una hoja A4 */
+  width: 210mm;
+  /* Alto de una hoja A4 */
+  overflow: hidden;
+  page-break-after: always;
+  margin: 1em;
+  text-align: justify;
+  font-family: "Poppins";
+  font-size: 14px;
+  margin: 8em auto 2em auto;
+}
+
+p {
+  text-align: justify !important;
+}
+
+.options-container {
+  position: fixed;
+  display: flex;
+  background: white;
+  width: 100%;
+  padding: 6px 20px 6px 20px;
+  border-bottom: 1px solid #ccc;
+  font-family: "Poppins";
+
+  .options {
+    width: 80%;
+    display: flex;
+    gap: 22px;
+  }
+
+  .save {
+    width: 20%;
+    display: flex;
+    justify-content: center;
+  }
+
+  #search {
+    width: 300px;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    display: none;
+    transition: 0.5s;
+  }
+
+  #search-text {
+    height: 0px;
+    display: flex;
+    align-items: center;
+    display: none;
+  }
+
+  #pagination-text {
+    height: 0px;
+    display: flex;
+    align-items: center;
+  }
+
+  a {
+    cursor: pointer;
+  }
+
+  i {
+    color: white;
+    font-size: 1.5em;
+  }
+}
+
+.d-none {
+  display: none;
+}
+
+.highlight {
+  background-color: yellow;
+
+  &.current {
+    background-color: rgba(255, 166, 0, 0.674);
+  }
+}
+
+/** Firma */
+.signature-pad {
+  border: 2px solid #9e9e9e;
+  border-radius: 4px;
+}
+
+.clear-button {
+  color: #000;
+}
+
+canvas {
+  touch-action: none;
+}
+
+.titulo-principal {
+  font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.subtitulo {
+  font-size: 1rem;
+  text-align: center !important;
+  margin-bottom: 1rem;
+}
+
+.documentos {
+  list-style: none;
+  padding: 1.5rem;
+  font-size: 1rem;
+}
+
+.select-all{
+  color: var(--primary-color);
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.documentos ul {
+  padding: 0;
+}
+
+.documentos ul li {
+  display: flex;
+  align-items: center;
+  padding-bottom: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+.documentos input[type="checkbox"] {
+  margin-right: 1rem;
+  transform: scale(2.0);
+  accent-color: var(--primary-color);
+}
+
+label {
+  display: flex;
+}
+
+.img-signed {
+  width: 38px;
+  margin: -10px 0 0 -5px;
+}
+
+input[type="checkbox"]:disabled {
+  accent-color: var(--color-check-signed) !important;
+  opacity: 1 !important;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.boton-firmar {
+  padding: 0.7rem 2rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.boton-firmar img {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+.boton-enviar {
+  padding: 0.7rem 2rem;
+  background-color: var(--color-boton-success);
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.boton-enviar img {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+}
+
+.centrado {
+  display: flex;
+  justify-content: center;
+}
+
 .carousel {
   position: absolute;
   top: 0;
@@ -36,7 +270,7 @@ body {
 .status-indicator {
   user-select: none;
   position: fixed;
-  top: 1rem;
+  top: 3rem;
   right: 1rem;
   border-radius: 20px;
   background-color: rgba(0, 0, 0, 0.171);
@@ -47,11 +281,20 @@ body {
   gap: 10px;
   z-index: 10;
   font-weight: bold;
+  height: 2rem;
 }
 
-.status-indicator > .status-indicator__circle {
+.status-indicator>.status-indicator__circle {
   width: 20px;
   height: 20px;
   border-radius: 50%;
   background-color: red;
+}
+
+.flex {
+  display: flex;
+}
+
+.justify-end {
+  justify-content: flex-end;
 }

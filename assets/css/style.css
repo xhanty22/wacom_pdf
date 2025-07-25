@@ -22,7 +22,7 @@ body {
   font-family: "Poppins";
   margin: 0;
   padding: 0;
-  cursor: none;
+  /* cursor: none; */
   user-select: none;
 }
 
@@ -53,7 +53,7 @@ body {
   text-align: justify;
   font-family: "Poppins";
   font-size: 14px;
-  margin: 8em auto 2em auto;
+  margin: 6em auto 2em auto;
 }
 
 p {
@@ -281,7 +281,6 @@ button:disabled {
   gap: 10px;
   z-index: 10;
   font-weight: bold;
-  height: 2rem;
 }
 
 .status-indicator>.status-indicator__circle {

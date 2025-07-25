@@ -2,7 +2,6 @@ import { io } from "./SocketClient_IO.js";
 
 const initSocketManager = async () => {
 
-  const statusLabel = document.querySelector(".status-indicator__text");
   const statusIndicator = document.querySelector(".status-indicator__circle");
 
   // SOCKETS
@@ -20,12 +19,10 @@ const initSocketManager = async () => {
   });
 
   socket.on("connect", () => {
-    statusLabel.textContent = "Conectado";
     statusIndicator.style.backgroundColor = "green";
   });
 
   socket.on("disconnect", () => {
-    statusLabel.textContent = "Desconectado";
     statusIndicator.style.backgroundColor = "red";
   });
 

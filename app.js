@@ -39,7 +39,7 @@ window.app = new Vue({
           this.documentos = docs.map(doc => {
             const base64str = doc.base64.includes(",") ? doc.base64.split(",")[1] : doc.base64;
             const decodedHtml = this.decodeBase64Utf8(base64str);
-            const cleanHtml = decodedHtml.replaceAll('@@firma', '<span style="display:none;">@@firma</span>');
+            const cleanHtml = decodedHtml.replaceAll('@@firma-0', '<span style="display:none;">@@firma-0</span>');
             return { ...doc, html: cleanHtml };
           });
         }
@@ -308,7 +308,7 @@ window.app = new Vue({
                   doc.signed = true;
                   doc.status = "Firmado";
 
-                  const restoredHtml = doc.html.replace('<span style="display:none;">@@firma</span>', '@@firma');
+                  const restoredHtml = doc.html.replace('<span style="display:none;">@@firma-0</span>', '@@firma-0');
                   console.log(restoredHtml);
 
                   const newBase64 = btoa(restoredHtml);

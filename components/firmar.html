@@ -1,44 +1,49 @@
 <div>
-  <!-- Barra de opciones -->
   <div class="options-container">
-    <div class="options">
-      <a @click="$parent.back" class="btn btn-primary" title="Regresar">
-        <img src="assets/img/back.png" width="30" />
-      </a>
-      <!-- <a onclick="window.print()" class="btn btn-primary" title="Imprimir"><img src="assets/img/print.png" width="30"></a> -->
-      <input type="text" id="search" placeholder="Buscar..." />
-      <!-- <a onclick="window.search()" id="btn-search" class="btn btn-primary" title="Buscar"><img
-                    src="assets/img/search.png" width="30"></a>
+    <div class="options-container">
+      <div class="options">
+        <a @click="$parent.back" class="btn btn-primary" title="Regresar">
+          <img src="assets/img/back.png" width="35" />
+        </a>
+        <!-- <a onclick="window.print()" class="btn btn-primary" title="Imprimir"><img src="assets/img/print.png" width="35"></a> -->
+        <!-- <input type="text" id="search" placeholder="Buscar..." /> -->
+        <!-- <a onclick="window.search()" id="btn-search" class="btn btn-primary" title="Buscar"><img
+                    src="assets/img/search.png" width="35"></a>
             <a onclick="window.closeSearch()" id="btn-close" class="btn btn-primary d-none" title="Buscar"><img
-                    src="assets/img/close.png" width="30"></a>
+                    src="assets/img/close.png" width="35"></a>
             <a onclick="window.upSearch()" id="up-search" class="btn btn-primary d-none" title="Siguiente"><img
-                    src="assets/img/up.png" width="30"></a>
+                    src="assets/img/up.png" width="35"></a>
             <p id="search-text">0/0</p>
             <a onclick="window.downSearch()" id="down-search" class="btn btn-primary d-none" title="Anterior"><img
-                    src="assets/img/down.png" width="30"></a> -->
-      <a @click="$parent.addZoom" class="btn btn-primary" title="Aumentar Zoom">
-        <img src="assets/img/add.png" width="30" />
-      </a>
-      <a @click="$parent.lessZoom" class="btn btn-primary" title="Dismunuir Zoom">
-        <img src="assets/img/less.png" width="30" />
-      </a>
-    </div>
-    <div class="save">
-      <a @click="$parent.save" class="btn btn-primary" title="Guardar">
-        <img src="assets/img/save.png" width="30" />
-      </a>
+                    src="assets/img/down.png" width="35"></a> -->
+        <a @click="$parent.addZoom" class="btn btn-primary" title="Aumentar Zoom">
+          <img src="assets/img/add.png" width="35" />
+        </a>
+        <a @click="$parent.lessZoom" class="btn btn-primary" title="Dismunuir Zoom">
+          <img src="assets/img/less.png" width="35" />
+        </a>
+      </div>
+      <!-- <div class="save">
+        <a @click="$parent.save" class="btn btn-primary" title="Guardar">
+          <img src="assets/img/save.png" width="35" />
+        </a>
+      </div> -->
     </div>
   </div>
-  <div class="content" v-if="$parent.seleccionados.length > 0">
+  <div class="content">
+
     <div class="content-page">
-      <div class="files" v-for="(file, index) in $parent.seleccionados" :key="index">
-        <div class="contenido-documento" v-html="file.html"></div>
-      </div>
-      <div style="margin-top: 5em">
-        <canvas id="draw-canvas" height="200" width="400" class="signature-pad"></canvas>
-        <p>
+      <div class="page-signature">
+        <div class="files" v-for="(file, index) in $parent.seleccionados" :key="index">
+          <div class="contenido-documento" v-html="file.html"></div>
+        </div>
+        <div class="div-firma">
+          <canvas id="draw-canvas" height="200" width="400" class="signature-pad"></canvas>
           <a class="clear-button" @click="$parent.clearCanvas">Limpiar</a>
-        </p>
+          <div class="div-save">
+            <button class="boton-firmar" @click="$parent.save" title="Guardar">Guardar</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

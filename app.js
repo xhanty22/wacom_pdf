@@ -9,12 +9,35 @@ window.app = new Vue({
     canvas: null,
     ctx: null,
     isDrawing: false,
-    todosFirmados: false
+    todosFirmados: false,
+    firmaPendiente: '',
+    user: {
+      nombre: '',
+      documento: '',
+    }
   },
   async mounted() {
+    window.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+        Swal.fire({
+          title: '¡Alerta!',
+          text: '¿Está seguro que desea eliminar el storage',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Sí',
+          confirmButtonColor: '#d41717',
+          cancelButtonText: 'No'
+        }).then(result => {
+          if (result.isConfirmed) {
+            localStorage.clear();
+            Swal.fire('LocalStorage limpiado', '', 'success');
+            location.reload();
+          }
+        });
+      }
+    });
+    this.validUser();
     await initSocketManager();
-
-    this.cambiarComponente('inicio');
   },
   computed: {
     todosSeleccionados() {
@@ -23,6 +46,17 @@ window.app = new Vue({
     }
   },
   methods: {
+    validUser() {
+      const user = JSON.parse(localStorage.getItem('tabletUser'));
+
+      if (user == null) {
+        this.cambiarComponente("login");
+      } else {
+        this.user = user;
+        this.cambiarComponente('inicio');
+      }
+
+    },
     toggleSeleccionTodos(event) {
       const noFirmados = this.documentos.filter(doc => !doc.signed);
 
@@ -34,15 +68,12 @@ window.app = new Vue({
     },
     cambiarComponente(nombre, docs = []) {
       if (docs.length) {
-        this.documentos = docs;
-        if (docs.length) {
-          this.documentos = docs.map(doc => {
-            const base64str = doc.base64.includes(",") ? doc.base64.split(",")[1] : doc.base64;
-            const decodedHtml = this.decodeBase64Utf8(base64str);
-            const cleanHtml = decodedHtml.replaceAll('@@firma-0', '<span style="display:none;">@@firma-0</span>');
-            return { ...doc, html: cleanHtml };
-          });
-        }
+        this.documentos = docs.map(doc => {
+          const base64str = doc.base64.includes(",") ? doc.base64.split(",")[1] : doc.base64;
+          const decodedHtml = this.decodeBase64Utf8(base64str);
+          const cleanHtml = decodedHtml.replaceAll('@@firma-0', '<span style="display:none;">@@firma-0</span>');
+          return { ...doc, html: cleanHtml };
+        });
       }
       fetch(`./components/${nombre}.html?vs=${Date.now()}`)
         .then(resp => resp.text())
@@ -65,6 +96,8 @@ window.app = new Vue({
                 current = (current + 1) % images.length;
                 images[current].classList.add("active");
               }, 4000);
+            } else if (nombre === 'archivos') {
+              this.seleccionados = [];
             }
           });
 
@@ -75,6 +108,27 @@ window.app = new Vue({
     inicializarFirma() {
       this.canvas = document.getElementById("draw-canvas");
       this.ctx = this.canvas.getContext("2d");
+      this.configurarCanvas();
+
+      const content = document.querySelector(".content");
+      if (content) {
+        content.style.zoom = "100%";
+      }
+
+      if (this.firmaPendiente) {
+        const img = new Image();
+        img.src = this.firmaPendiente;
+
+        img.onload = () => {
+          this.clearCanvas(); // limpia antes si quieres
+          this.ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
+        };
+
+        this.firmaPendiente = null;
+      }
+    },
+
+    configurarCanvas() {
       this.ctx.lineCap = "round";
       this.ctx.lineJoin = "round";
       this.ctx.lineWidth = 2;
@@ -88,21 +142,6 @@ window.app = new Vue({
       this.canvas.addEventListener('touchstart', this.inicioTactil, { passive: false });
       this.canvas.addEventListener('touchmove', this.dibujarTactil, { passive: false });
       this.canvas.addEventListener('touchend', this.finDibujo, { passive: false });
-
-      document.getElementById("search").addEventListener("keyup", (event) => {
-        const valueTxt = event.target.value;
-        if (valueTxt.length >= 4) {
-          this.searchText();
-        } else {
-          this.clearHighlights();
-          document.getElementById("search-text").innerHTML = "0/0";
-        }
-      });
-
-      const content = document.querySelector(".content");
-      if (content) {
-        content.style.zoom = "130%";
-      }
     },
 
     inicioDibujo(e) {
@@ -155,7 +194,7 @@ window.app = new Vue({
     back() {
       Swal.fire({
         title: '¡Alerta!',
-        text: '¿Está seguro de que desea salir? Los cambios no se guardarán.',
+        text: '¿Está seguro que desea salir? Los cambios no se guardarán.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Sí',
@@ -267,29 +306,25 @@ window.app = new Vue({
       highlights[index + 1].scrollIntoView({ behavior: "smooth", block: "center" });
     },
 
-    async addZoom() {
-      let content = document.getElementsByClassName("content")[0];
-      let currentZoom = parseInt(content.style.zoom) || 100;
-      content.style.zoom = currentZoom + 10 + "%";
-      if (currentZoom >= 150) {
-        content.style.zoom = "150%";
-      }
+    addZoom() {
+      this.ajustarZoom(10);
+    },
+    lessZoom() {
+      this.ajustarZoom(-10);
     },
 
-    async lessZoom() {
-      let content = document.getElementsByClassName("content")[0];
+    ajustarZoom(valor) {
+      const content = document.getElementsByClassName("page-signature")[0];
       let currentZoom = parseInt(content.style.zoom) || 100;
-      content.style.zoom = currentZoom - 10 + "%";
-      if (currentZoom <= 100) {
-        content.style.zoom = "100%";
-      }
+      currentZoom = Math.max(100, Math.min(150, currentZoom + valor));
+      content.style.zoom = currentZoom + "%";
     },
 
     async save() {
       if (!this.isCanvasEmpty()) {
         Swal.fire({
           title: '¡Alerta!',
-          text: '¿Está seguro de que desea guardar la firma?',
+          text: '¿Está seguro que desea guardar la firma?',
           icon: 'info',
           showCancelButton: true,
           confirmButtonText: 'Sí',
@@ -297,24 +332,21 @@ window.app = new Vue({
           cancelButtonText: 'No'
         }).then((result) => {
           if (result.isConfirmed) {
-            Swal.fire('¡Alerta!', 'Guardado con éxito', 'success');
-
             if (window.socket) {
               const signatureData = this.canvas.toDataURL("image/png").split(',')[1];
               this.documentos.forEach(doc => {
-                const estaSeleccionado = this.seleccionados.includes(doc);
+                const estaSeleccionado = this.seleccionados.some(s => s.id === doc.id);
                 if (estaSeleccionado) {
                   doc.signature = signatureData;
                   doc.signed = true;
-                  doc.status = "Firmado";
+                  doc.status = 1;
 
                   const restoredHtml = doc.html.replace('<span style="display:none;">@@firma-0</span>', '@@firma-0');
-                  console.log(restoredHtml);
-
                   const newBase64 = btoa(restoredHtml);
                   doc.base64 = "data:text/html;base64," + newBase64;
                 }
               });
+
               this.seleccionados = [];
               this.todosFirmados = this.documentos.every(doc => doc.signed === true);
 
@@ -342,7 +374,6 @@ window.app = new Vue({
           icon: 'warning',
           confirmButtonText: 'Ok',
           confirmButtonColor: '#d41717',
-        }).then(result => {
         });
         return;
       }
@@ -360,16 +391,23 @@ window.app = new Vue({
       } else {
         window.socket.emit("saveSignature", {
           documentsSigned: this.documentos,
-          asigTo: "1007446942"
+          asigTo: this.user.documento
         });
-        Swal.fire('Todos los documentos han sido firmados', '', 'success');
+        Swal.fire({
+          title: 'Todos los documentos han sido firmados',
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false
+        });
         this.$root.cambiarComponente('inicio');
       }
     },
+
     decodeBase64Utf8(base64str) {
       const binary = Uint8Array.from(atob(base64str), c => c.charCodeAt(0));
       return new TextDecoder('utf-8').decode(binary);
     },
+
     isCanvasEmpty() {
       const blankCanvas = document.createElement('canvas');
       blankCanvas.width = this.canvas.width;
@@ -384,7 +422,50 @@ window.app = new Vue({
         }
       }
       return true; // Es idéntico al canvas vacío
-    }
+    },
+
+    volverFirmar(doc) {
+      Swal.fire({
+        title: '¡Alerta!',
+        text: '¿Está seguro que desea firmar el documento nuevamente?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí',
+        confirmButtonColor: '#d41717',
+        cancelButtonText: 'No'
+      }).then(async result => {
+        if (result.isConfirmed) {
+          const documento = this.documentos.find(d => d.id === doc.id);
+          if (documento) {
+            documento.signed = false;
+            documento.status = 0;
+            this.seleccionados = [doc];
+            this.todosFirmados = false;
+            this.firmaPendiente = 'data:image/png;base64,' + documento.signature;
+            this.cambiarComponente('firmar', this.documentos);
+          }
+        }
+      });
+    },
+
+    loginForm() {
+      if (this.user.nombre.trim() == "" || this.user.documento.trim() == "") {
+        Swal.fire({
+          title: '¡Alerta!',
+          text: 'Complete los campos del formulario para continuar',
+          icon: 'warning',
+          showCancelButton: false,
+          confirmButtonText: 'OK',
+          confirmButtonColor: '#d41717',
+        });
+      } else {
+        Swal.fire("Registro exitoso", '', "success");
+        localStorage.setItem('tabletUser', JSON.stringify(this.user));
+        setTimeout(() => {
+          location.reload();
+        }, 2000);
+      }
+    },
   }
 });
 

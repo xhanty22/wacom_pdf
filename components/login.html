@@ -1,0 +1,28 @@
+<div>
+  <div class="options-container">
+    <div class="options">
+      <img class="head-logo" src="assets/img/home/logo.jpg" width="" />
+    </div>
+  </div>
+  <div class="content">
+
+    <div class="content-page">
+      <div class="page-documentos">
+        <h2 class="titulo-principal">Registro de dispositivo</h2>
+        <div class="form">
+            <div class="form-input">
+              <label for="">Nombre</label>
+              <input class="form-control" type="text" v-model="$parent.user.nombre">
+            </div>
+            <div class="form-input">
+              <label for="">Documento</label>
+              <input class="form-control" type="number" v-model="$parent.user.documento">
+            </div>
+        </div>
+        <div class="centrado">
+          <button class="boton-enviar" @click="$parent.loginForm">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

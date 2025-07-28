@@ -17,13 +17,21 @@
   --color-check-signed: #28a745;
 }
 
+html,
 body {
-  background: rgb(233, 233, 233, 0.5);
-  font-family: "Poppins";
+  height: 100%;
   margin: 0;
   padding: 0;
-  /* cursor: none; */
-  user-select: none;
+  user-select: none !important;
+}
+
+body,
+label,
+input,
+button,
+a {
+  cursor: none !important;
+
 }
 
 .inicio {
@@ -37,23 +45,50 @@ body {
 .content {
   display: flex;
   justify-content: center;
+  padding-top: 4rem;
+  /* altura del navbar */
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
 .content-page {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  max-width: 100vw;
+  overflow-y: auto;
+  padding: 1em;
+  box-sizing: border-box;
+}
+
+.page-documentos {
   background: #fff;
   padding: 2em;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  /* Ancho de una hoja A4 */
   width: 210mm;
-  /* Alto de una hoja A4 */
-  overflow: hidden;
+  overflow: auto;
   page-break-after: always;
-  margin: 1em;
   text-align: justify;
   font-family: "Poppins";
-  font-size: 14px;
-  margin: 6em auto 2em auto;
+  font-size: 1.4rem;
+  margin: auto;
+  max-height: 73vh;
+}
+
+.page-signature {
+  background: #fff;
+  padding: 2em;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  overflow: auto;
+  page-break-after: always;
+  text-align: justify;
+  font-family: "Poppins";
+  font-size: 1.4rem;
+  margin: auto;
+  max-height: 73vh;
 }
 
 p {
@@ -68,11 +103,19 @@ p {
   padding: 6px 20px 6px 20px;
   border-bottom: 1px solid #ccc;
   font-family: "Poppins";
+  height: 4rem;
+  align-items: center;
+
 
   .options {
     width: 80%;
     display: flex;
     gap: 22px;
+    margin-top: 10px;
+
+    .head-logo {
+      width: 15rem;
+    }
   }
 
   .save {
@@ -103,13 +146,9 @@ p {
     align-items: center;
   }
 
-  a {
-    cursor: pointer;
-  }
-
   i {
     color: white;
-    font-size: 1.5em;
+    font-size: 1.5rem;
   }
 }
 
@@ -126,9 +165,24 @@ p {
 }
 
 /** Firma */
+.div-firma {
+  text-align: center;
+}
+
+.div-save {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
 .signature-pad {
+  display: block;
+  width: 100%;
+  max-width: 400px;
+  height: 200px;
   border: 2px solid #9e9e9e;
   border-radius: 4px;
+  margin: 2rem auto 1rem auto;
 }
 
 .clear-button {
@@ -137,16 +191,17 @@ p {
 
 canvas {
   touch-action: none;
+
 }
 
 .titulo-principal {
-  font-size: 1.5rem;
+  font-size: 2.5rem;
   text-align: center;
   margin-bottom: 1.5rem;
 }
 
 .subtitulo {
-  font-size: 1rem;
+  font-size: 1.5rem;
   text-align: center !important;
   margin-bottom: 1rem;
 }
@@ -157,11 +212,45 @@ canvas {
   font-size: 1rem;
 }
 
-.select-all{
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: "Poppins", sans-serif;
+}
+
+.form-input {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  width: 300px;
+}
+
+.form-input label {
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-control {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: #007bff;
+}
+
+
+.select-all {
   color: var(--primary-color);
-  cursor: pointer;
   text-decoration: underline;
-  font-size: 0.9rem;
+  font-size: 1.5rem;
   margin-bottom: 1rem;
 }
 
@@ -180,15 +269,38 @@ canvas {
   margin-right: 1rem;
   transform: scale(2.0);
   accent-color: var(--primary-color);
+
 }
 
 label {
   display: flex;
+  font-size: 1.4rem;
+  width: 100%;
+}
+
+.fila-documento {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.contenido-izquierda {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* espacio entre imagen y texto */
 }
 
 .img-signed {
   width: 38px;
   margin: -10px 0 0 -5px;
+}
+
+.img-edit {
+  width: 32px;
+  height: 32px;
+  margin: 0;
 }
 
 input[type="checkbox"]:disabled {
@@ -198,7 +310,6 @@ input[type="checkbox"]:disabled {
 
 button:disabled {
   background-color: #ccc;
-  cursor: not-allowed;
 }
 
 .boton-firmar {
@@ -206,8 +317,7 @@ button:disabled {
   background-color: var(--primary-color);
   color: white;
   border: none;
-  cursor: pointer;
-  font-size: 1rem;
+  font-size: 1.5rem;
   border-radius: 5px;
   display: flex;
   align-items: center;
@@ -225,8 +335,7 @@ button:disabled {
   background-color: var(--color-boton-success);
   color: white;
   border: none;
-  cursor: pointer;
-  font-size: 1rem;
+  font-size: 1.5rem;
   border-radius: 5px;
   display: flex;
   align-items: center;
@@ -270,7 +379,7 @@ button:disabled {
 .status-indicator {
   user-select: none;
   position: fixed;
-  top: 3rem;
+  top: 0.7rem;
   right: 1rem;
   border-radius: 20px;
   background-color: rgba(0, 0, 0, 0.171);

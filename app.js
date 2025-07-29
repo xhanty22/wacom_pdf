@@ -21,7 +21,7 @@ window.app = new Vue({
       if (e.ctrlKey && e.shiftKey && e.key === 'D') {
         Swal.fire({
           title: '¡Alerta!',
-          text: '¿Está seguro que desea eliminar el storage',
+          text: '¿Está seguro que desea eliminar el storage?',
           icon: 'warning',
           showCancelButton: true,
           confirmButtonText: 'Sí',
@@ -46,6 +46,7 @@ window.app = new Vue({
     }
   },
   methods: {
+    // Valida si hay un usiario registrado para el uso, sino redirecciona al login
     validUser() {
       const user = JSON.parse(localStorage.getItem('tabletUser'));
 
@@ -57,6 +58,7 @@ window.app = new Vue({
       }
 
     },
+    // Selecciona o deseleciona todos los documentos
     toggleSeleccionTodos(event) {
       const noFirmados = this.documentos.filter(doc => !doc.signed);
 
@@ -66,6 +68,7 @@ window.app = new Vue({
         this.seleccionados = noFirmados;
       }
     },
+    // Alterna entre los componentes recibiendo el nombre del html
     cambiarComponente(nombre, docs = []) {
       if (docs.length) {
         this.documentos = docs.map(doc => {
@@ -104,7 +107,7 @@ window.app = new Vue({
         })
         .catch(err => console.error('Error al cargar vista:', err));
     },
-
+    // Inicializa el canva para la firma
     inicializarFirma() {
       this.canvas = document.getElementById("draw-canvas");
       this.ctx = this.canvas.getContext("2d");
@@ -127,7 +130,7 @@ window.app = new Vue({
         this.firmaPendiente = null;
       }
     },
-
+    
     configurarCanvas() {
       this.ctx.lineCap = "round";
       this.ctx.lineJoin = "round";
@@ -381,7 +384,7 @@ window.app = new Vue({
       this.$root.documentosSeleccionados = this.seleccionados;
       this.$root.cambiarComponente('firmar');
     },
-
+    // Emite un evento con los documentos ya firmados
     enviarDocumentos() {
       this.todosFirmados = this.documentos.every(doc => doc.signed === true);
 
@@ -423,7 +426,7 @@ window.app = new Vue({
       }
       return true; // Es idéntico al canvas vacío
     },
-
+    // Remueve la firma de un documento para firmarlo nuevamente
     volverFirmar(doc) {
       Swal.fire({
         title: '¡Alerta!',

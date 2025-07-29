@@ -37,7 +37,7 @@ app.whenReady().then(() => {
         title: 'Complementos Humanos',
         width: displayToUse.bounds.width,
         height: displayToUse.bounds.height,
-        icon: 'assets/icono.ico'
+        icon: path.join(__dirname, 'assets/icon.ico')
     });
 
     // FullScreen

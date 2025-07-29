@@ -2,29 +2,44 @@
   "name": "complementoshumanos",
   "productName": "Complementos Humanos",
   "version": "1.0.0",
+  "author": "Develop",
   "description": "Gestión Interna de Complementos Humanos",
   "main": "main.js",
   "scripts": {
-    "start": "electron .",
+    "start": "electron-forge start",
     "dist": "electron-builder",
-    "make": "electron-forge make"
+    "make": "electron-forge make",
+    "package": "electron-forge package"
   },
   "dependencies": {
     "electron-reload": "^2.0.0-alpha.1",
+    "electron-squirrel-startup": "^1.0.1",
     "socket.io": "^4.8.1",
     "systeminformation": "^5.27.1"
   },
   "devDependencies": {
-    "@electron-forge/cli": "^7.6.0",
-    "electron": "^33.2.1",
-    "electron-builder": "^25.1.8"
+    "@electron-forge/cli": "^7.8.1",
+    "@electron-forge/maker-deb": "^7.8.1",
+    "@electron-forge/maker-rpm": "^7.8.1",
+    "@electron-forge/maker-squirrel": "^7.8.1",
+    "@electron-forge/maker-zip": "^7.8.1",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.8.1",
+    "@electron-forge/plugin-fuses": "^7.8.1",
+    "@electron/fuses": "^1.8.0",
+    "electron": "^33.2.1"
   },
   "build": {
     "appId": "com.complementoshumanos.app",
     "productName": "Complementos Humanos",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*"
+    ],
     "win": {
       "target": "nsis",
-      "icon": "assets/icono.ico",
+      "icon": "assets/icon.ico",
       "sign": false
     }
   }

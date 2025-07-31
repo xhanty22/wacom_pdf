@@ -71,11 +71,21 @@ window.app = new Vue({
     // Alterna entre los componentes recibiendo el nombre del html
     cambiarComponente(nombre, docs = []) {
       if (docs.length) {
+        this.todosFirmados = false;
         this.documentos = docs.map(doc => {
           const base64str = doc.base64.includes(",") ? doc.base64.split(",")[1] : doc.base64;
           const decodedHtml = this.decodeBase64Utf8(base64str);
           const cleanHtml = decodedHtml.replaceAll('@@firma-0', '<span style="display:none;">@@firma-0</span>');
-          return { ...doc, html: cleanHtml };
+
+          const docExistente = this.documentos.find(d => d.id === doc.id);
+
+          return {
+            ...doc,
+            html: cleanHtml,
+            signed: docExistente?.signed || false,
+            status: docExistente?.status || false,
+            signature: docExistente?.signature || '',
+          };
         });
       }
       fetch(`./components/${nombre}.html?vs=${Date.now()}`)
@@ -130,7 +140,7 @@ window.app = new Vue({
         this.firmaPendiente = null;
       }
     },
-    
+
     configurarCanvas() {
       this.ctx.lineCap = "round";
       this.ctx.lineJoin = "round";
@@ -462,7 +472,7 @@ window.app = new Vue({
           confirmButtonColor: '#d41717',
         });
       } else {
-        Swal.fire("Registro exitoso", '', "success");
+        Swal.fire("Vinculación exitosa", '', "success");
         localStorage.setItem('tabletUser', JSON.stringify(this.user));
         setTimeout(() => {
           location.reload();

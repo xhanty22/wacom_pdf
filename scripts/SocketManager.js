@@ -5,13 +5,13 @@ const initSocketManager = async () => {
   const statusIndicator = document.querySelector(".status-indicator__circle");
 
   // SOCKETS
-  const IP = "172.29.110.238";
-  // const IP = "127.0.0.1";
-  const PORT = "8594";
-  // const PORT = "9800";
+  // const IP = "172.29.110.238";
+  const IP = "127.0.0.1";
+  // const PORT = "8594";
+  const PORT = "9800";
 
   // Conectar al servidor WebSocket
-const user = JSON.parse(localStorage.getItem('tabletUser')) || {};
+  const user = JSON.parse(localStorage.getItem('tabletUser')) || {};
 
   const socket = io(`http://${IP}:${PORT}`, {
     auth: {
@@ -38,10 +38,13 @@ const user = JSON.parse(localStorage.getItem('tabletUser')) || {};
   })
 
   socket.on("viewerContract", (data) => {
-    console.log('recibe emit', data);
-    
+
     if (window.app && typeof window.app.cambiarComponente === 'function') {
-      window.app.cambiarComponente('archivos', data.docs);
+      if (window.app.componenteActual == 'inicio' || window.app.componenteActual == 'archivos') {
+        window.app.cambiarComponente('archivos', data.docs);
+      } else {
+        window.app.cambiarComponente(window.app.componenteActual, data.docs);
+      }
     } else {
       console.warn("Vue app no está disponible o no tiene método cambiarComponente");
     }

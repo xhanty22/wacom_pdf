@@ -8,19 +8,20 @@
 
     <div class="content-page">
       <div class="page-documentos">
-        <h2 class="titulo-principal">Registro de dispositivo</h2>
+        <h2 class="titulo-principal">Vincular dispositivo</h2>
+        <p class="subtitulo">Ingresa tu nombre y número de documento para conectar este dispositivo a SIRHU.</p>
         <div class="form">
-            <div class="form-input">
-              <label for="">Nombre</label>
-              <input class="form-control" type="text" v-model="$parent.user.nombre">
-            </div>
-            <div class="form-input">
-              <label for="">Documento</label>
-              <input class="form-control" type="number" v-model="$parent.user.documento">
-            </div>
+          <div class="form-input">
+            <label for="">Nombre</label>
+            <input class="form-control" type="text" v-model="$parent.user.nombre">
+          </div>
+          <div class="form-input">
+            <label for="">Número de documento</label>
+            <input class="form-control" type="number" v-model="$parent.user.documento">
+          </div>
         </div>
         <div class="centrado">
-          <button class="boton-enviar" @click="$parent.loginForm">Guardar</button>
+          <button class="boton-enviar" @click="$parent.loginForm">Conectar dispositivo</button>
         </div>
       </div>
     </div>

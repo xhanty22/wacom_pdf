@@ -406,3 +406,13 @@ button:disabled {
 .justify-end {
   justify-content: flex-end;
 }
+
+.swal2-popup,
+.swal2-title,
+.swal2-content,
+.swal2-html-container,
+.swal2-confirm,
+.swal2-cancel {
+  font-family: "Poppins" !important;
+  cursor: none !important;
+}

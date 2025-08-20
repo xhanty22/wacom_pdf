@@ -65,7 +65,7 @@
         <div class="div-center">
           <button class="signature-button" @click="$parent.signSelected"
             :disabled="$parent.selected.length === 0" v-if="!$parent.allSigned">
-            <img src="assets/img/signature.png" alt="Icono"> Firmar documentos selected
+            <img src="assets/img/signature.png" alt="Icono"> Firmar documentos seleccionados
           </button>
           <button class="send-button" @click="$parent.sendDocuments" v-if="$parent.allSigned">
             <img src="assets/img/send.png" alt="Icono"> Enviar documentos firmados

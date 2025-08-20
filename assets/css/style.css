@@ -17,7 +17,7 @@ html, body{
   user-select:none !important;
 }
 body, label, input, button, a{
-  /* cursor: none !important; */
+  cursor: none !important;
 }
 p{ text-align:justify !important; }
 

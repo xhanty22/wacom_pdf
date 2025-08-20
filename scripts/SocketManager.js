@@ -5,10 +5,10 @@ const initSocketManager = async () => {
   const statusIndicator = document.querySelector(".status-indicator__circle");
 
   // SOCKETS
-  const IP = "172.29.110.238";
-  const PORT = "8594";
-  // const IP = "127.0.0.1";
-  // const PORT = "9800";
+  // const IP = "172.29.110.238";
+  // const PORT = "8594";
+  const IP = "127.0.0.1";
+  const PORT = "9800";
 
   // Conectar al servidor WebSocket
   const user = JSON.parse(localStorage.getItem('tabletUser')) || {};

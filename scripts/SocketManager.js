@@ -6,8 +6,8 @@ const initSocketManager = async () => {
 
   // SOCKETS
   const IP = "172.29.110.238";
-  // const IP = "127.0.0.1";
   const PORT = "8594";
+  // const IP = "127.0.0.1";
   // const PORT = "9800";
 
   // Conectar al servidor WebSocket
@@ -15,8 +15,8 @@ const initSocketManager = async () => {
 
   const socket = io(`http://${IP}:${PORT}`, {
     auth: {
-      name: user.nombre,
-      asigTo: user.documento,
+      name: user.name,
+      asigTo: user.id,
     }
   });
 
@@ -37,16 +37,21 @@ const initSocketManager = async () => {
     contrato.querySelector("p").textContent = e;
   })
 
+  socket.on("setConfig", (data) => {
+    localStorage.setItem("config", JSON.stringify(data.config));
+    window.app.changeComponent(window.app.currentComponent);
+  });
+
   socket.on("viewerContract", (data) => {
 
-    if (window.app && typeof window.app.cambiarComponente === 'function') {
-      if (window.app.componenteActual == 'inicio' || window.app.componenteActual == 'archivos') {
-        window.app.cambiarComponente('archivos', data.docs);
+    if (window.app && typeof window.app.changeComponent === 'function') {
+      if (window.app.currentComponent == 'home' || window.app.currentComponent == 'files') {
+        window.app.changeComponent('files', data.docs);
       } else {
-        window.app.cambiarComponente(window.app.componenteActual, data.docs);
+        window.app.changeComponent(window.app.currentComponent, data.docs);
       }
     } else {
-      console.warn("Vue app no está disponible o no tiene método cambiarComponente");
+      console.warn("Vue app no está disponible o no tiene método changeComponent");
     }
   });
 

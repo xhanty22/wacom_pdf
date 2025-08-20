@@ -1,27 +1,27 @@
 <div>
   <div class="options-container">
     <div class="options">
-      <img class="head-logo" src="assets/img/home/logo.jpg" width="" />
+      <img class="head-logo" :src="$parent.configProject.logo || 'assets/img/home/logo.jpg'" width="" />
     </div>
   </div>
   <div class="content">
 
     <div class="content-page">
-      <div class="page-documentos">
-        <h2 class="titulo-principal">Vincular dispositivo</h2>
-        <p class="subtitulo">Ingresa tu nombre y número de documento para conectar este dispositivo a SIRHU.</p>
+      <div class="page-documents">
+        <h2 class="main-title">Vincular dispositivo</h2>
+        <p class="subtitle">Ingresa tu nombre y número de documento para conectar este dispositivo.</p>
         <div class="form">
           <div class="form-input">
             <label for="">Nombre</label>
-            <input class="form-control" type="text" v-model="$parent.user.nombre">
+            <input class="form-control" type="text" v-model="$parent.user.name">
           </div>
           <div class="form-input">
             <label for="">Número de documento</label>
-            <input class="form-control" type="number" v-model="$parent.user.documento">
+            <input class="form-control" type="number" v-model="$parent.user.id">
           </div>
         </div>
-        <div class="centrado">
-          <button class="boton-enviar" @click="$parent.loginForm">Conectar dispositivo</button>
+        <div class="div-center">
+          <button class="send-button" @click="$parent.loginForm">Conectar dispositivo</button>
         </div>
       </div>
     </div>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Complementos</title>
-    <link rel="shortcut icon" href="assets/icon.ico" type="image/x-icon">
+    <link class="icon-page" rel="shortcut icon" href="assets/icon.ico" type="image/x-icon">
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
         rel="stylesheet" />
@@ -16,7 +16,7 @@
         <div class="status-indicator">
             <div class="status-indicator__circle"></div>
         </div>
-        <component :is="componenteActual"></component>
+        <component :is="currentComponent"></component>
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -29,6 +29,13 @@
             mainScript.src = 'app.js?v=' + new Date().getTime();
             mainScript.type = 'module';
             document.body.appendChild(mainScript);
+
+            const cfg = JSON.parse(localStorage.getItem("config") || "{}");
+            if (cfg.logo) {
+                [...document.getElementsByClassName('icon-page')].forEach(el => el.href = cfg.logo);
+                document.title = cfg.name || document.title;
+            }
+
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

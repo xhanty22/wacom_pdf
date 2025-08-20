@@ -1,0 +1,6 @@
+<div class="home">
+  <div class="carrusel" ref="carrusel">
+    <img v-for="(img, i) in $parent.configProject.carrusel" :key="i" :src="img" :class="{ active: i === $parent.current }"
+      class="carrusel-image" />
+  </div>
+</div>

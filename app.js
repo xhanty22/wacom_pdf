@@ -1,36 +1,62 @@
+// Carga dinámica del SocketManager (mantiene caché-busting por versión)
 const moduleUrl = `./scripts/SocketManager.js?v=${Date.now()}`;
 const { initSocketManager } = await import(moduleUrl);
 
 window.app = new Vue({
   el: '#app',
   data: {
+    // Estado principal
     documents: [],
     selected: [],
     currentComponent: '',
+
+    // Canvas firma
     canvas: null,
     ctx: null,
     isDrawing: false,
-    allSigned: false,
     signaturePending: '',
-    user: {
-      name: '',
-      id: '',
-    },
+
+    // Progreso y usuario
+    allSigned: false,
+    user: { project: '', name: '', id: '' },
+
+    // Opciones fijas
+    optionsProject: [
+      { value: 1, label: 'SIAMO', imageDefault: 'https://web.caris.com.co/assets/img/loginCover.jpg' },
+      { value: 2, label: 'SIRHU', imageDefault: 'assets/img/home/one.jpg' }
+    ],
+
+    // UI/Config
+    selectOpen: false,
     configProject: {},
     current: 0,
     intervalId: null,
-    decisionTmp: {}
+
+    // Decisiones por documento
+    decisionTmp: {},
+
+    // Presencia web
+    webPresence: { connected: null, count: 0, lastTs: 0, offline: true },
+    _onWebPresence: null,
+    _webPresenceTimer: null,
+
+    // Otros flags internos
+    _submitting: false,
+    _blankCache: { width: 0, height: 0, data: null },
   },
+
+  // Al montar: hotkey limpieza, validar sesión, iniciar socket y carrusel
   async mounted() {
+    // Hotkey debug: Ctrl+Shift+D para limpiar sesión local
     window.addEventListener('keydown', (e) => {
       if (e.ctrlKey && e.shiftKey && e.key === 'D') {
         Swal.fire({
           title: '¡Alerta!',
-          text: '¿Está seguro que desea eliminar el storage?',
+          text: '¿Está seguro que desea eliminar la sesión?',
           icon: 'warning',
           showCancelButton: true,
           confirmButtonText: 'Sí',
-          confirmButtonColor: '#d41717',
+          confirmButtonColor: '#f44336',
           cancelButtonText: 'No'
         }).then(result => {
           if (result.isConfirmed) {
@@ -41,124 +67,250 @@ window.app = new Vue({
         });
       }
     });
+
     this.validateUser();
-    await initSocketManager();
+
+    // Carrusel seguro (no truena si falta config)
     this.intervalId = setInterval(() => {
-      const total = this.configProject.carrusel.length;
-      if (total > 0) {
-        this.current = (this.current + 1) % total;
-      }
+      const total = this?.configProject?.carrusel?.length || 0;
+      if (total > 0) this.current = (this.current + 1) % total;
     }, 4000);
   },
+
+  // Antes de destruir: liberar timers y listeners
   beforeDestroy() {
+    if (this._webPresenceTimer) clearTimeout(this._webPresenceTimer);
+    if (this._onWebPresence && window?.socket) {
+      window.socket.off('webPresence', this._onWebPresence);
+    }
     clearInterval(this.intervalId);
+    this.teardownSignatureListeners();
   },
+
   computed: {
+    // Retorna true si todos los no firmados están seleccionados
     allSelected() {
       const unsigned = this.documents.filter(doc => !doc.signed);
       return this.selected.length === unsigned.length;
+    },
+    // Etiqueta amigable del proyecto seleccionado
+    selectedLabel() {
+      const opt = this.optionsProject.find(o => o.value === this.user.project);
+      return opt ? opt.label : '';
+    },
+    imageDefaultByProject() {
+      const id = Number(this.$root.user.projectId); // por si viene como string
+      const opt = this.$root.optionsProject.find(o => o.value === id);
+      return opt ? opt.imageDefault : 'assets/img/default.jpg'; // fallback
     }
   },
+
   methods: {
+    // Valida conexión con la web y detecta desconexión prolongada
+    validateConnection() {
+      this._onWebPresence = ({ connected, count }) => {
+        this.webPresence.connected = !!connected;
+        this.webPresence.count = count ?? 0;
+
+        if (connected) {
+          if (this._webPresenceTimer) {
+            clearTimeout(this._webPresenceTimer);
+            this._webPresenceTimer = null;
+          }
+          if (this.webPresence.offline) this.webPresence.offline = false;
+        } else {
+          // Inicia temporizador para cambio a "offline"
+          if (this.currentComponent !== 'home' && this.currentComponent !== 'login') {
+            if (!this._webPresenceTimer) {
+              this._webPresenceTimer = setTimeout(() => {
+                if (!this.webPresence.connected && !this.webPresence.offline) {
+                  this.webPresence.offline = true;
+                  this.onWebDisconnectedLong();
+                }
+                this._webPresenceTimer = null;
+              }, 4000);
+            }
+          }
+        }
+      };
+      window.socket.on('webPresence', this._onWebPresence);
+    },
+
+    // Muestra modal de reconexión con cuenta regresiva
+    onWebDisconnectedLong() {
+      let tick;
+      Swal.fire({
+        title: 'Conexión con la web perdida',
+        html: 'Reintentando… <b>3</b> s',
+        icon: 'warning',
+        timer: 5000,
+        timerProgressBar: true,
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+          Swal.showLoading();
+          const b = Swal.getHtmlContainer().querySelector('b');
+          const upd = () => {
+            const ms = Swal.getTimerLeft();
+            b.textContent = ms ? Math.ceil(ms / 1000) : 0;
+          };
+          upd();
+          tick = setInterval(upd, 100);
+        },
+        willClose: () => clearInterval(tick),
+      }).then(() => {
+        if (this.webPresence.connected) return;
+        this.handleWebLossAction();
+      });
+    },
+
+    // Aplica fallback de UI si no vuelve la conexión
+    handleWebLossAction() {
+      try {
+        this.selected = [];
+        this.allSigned = this.documents.every(d => d.signed === true);
+        if (this.currentComponent !== 'files') this.changeComponent('files');
+        Swal.fire({
+          icon: 'info',
+          title: 'Sin conexión',
+          text: 'No se pudo restablecer la conexión.',
+          timer: 2000,
+          showConfirmButton: false
+        });
+        this.changeComponent('home');
+      } catch (e) {
+        // Silencioso en producción
+      }
+    },
+
+    // Registra decisión temporal (acepto/no acepto) por documento
     setDecision(docId, val) {
       this.$set(this.decisionTmp, docId, val);
     },
-    // Valida si hay un usiario registrado para el uso, sino redirecciona al login
-    validateUser() {
-      const user = JSON.parse(localStorage.getItem('tabletUser'));
 
-      if (user == null) {
-        this.changeComponent("login");
+    // Verifica sesión: si no hay usuario, abre login; si hay, va a home
+    async validateUser() {
+      const user = JSON.parse(localStorage.getItem('tabletUser'));
+      if (!user) {
+        this.changeComponent('login');
       } else {
         this.user = user;
+
         this.changeComponent('home');
+        await initSocketManager();
+        this.validateConnection();
       }
-
     },
-    // Selecciona o deseleciona todos los documentos
-    toggleSelectAll(event) {
+
+    // Selecciona/deselecciona todos los documentos sin firmar
+    toggleSelectAll() {
       const unsigned = this.documents.filter(doc => !doc.signed);
-
-      if (this.selected.length === unsigned.length) {
-        this.selected = [];
-      } else {
-        this.selected = unsigned;
-      }
+      this.selected = (this.selected.length === unsigned.length) ? [] : unsigned;
     },
-    // Alterna entre los componentes recibiendo el nombre del html
+
+    // Cambia de componente y normaliza documentos recibidos
     changeComponent(name, docs = []) {
-      if (docs.length) {
-        this.allSigned = false;
-        this.documents = docs.map(doc => {
-          const base64str = doc.base64.includes(",") ? doc.base64.split(",")[1] : doc.base64;
-          const decodedHtml = this.decodeBase64Utf8(base64str);
-          const cleanHtml = decodedHtml.replaceAll('@@firma-0', '<span style="display:none;">@@firma-0</span>');
 
-          const docExisting = this.documents.find(d => d.id === doc.id);
-
-          return {
-            ...doc,
-            html: docExisting?.html || cleanHtml,
-            signed: docExisting?.signed || false,
-            status: docExisting?.status || false,
-            signature: docExisting?.signature || '',
-          };
-        });
-      }
       fetch(`./components/${name}.html?vs=${Date.now()}`)
         .then(resp => resp.text())
         .then(html => {
           Vue.component(name, { template: html });
+
+          const prev = this.currentComponent;
           this.currentComponent = name;
 
+          // Limpia listeners al salir de la vista de firma
+          if (prev === 'signature' && name !== 'signature') this.teardownSignatureListeners();
+
           this.$nextTick(() => {
-            this.configProject = JSON.parse(localStorage.getItem("config") || "{}");
+            this.configProject = JSON.parse(localStorage.getItem('config') || '{}');
+
             if (name === 'signature') {
+              this.decisionTmp = {};
               this.initializeSignature();
             } else if (name === 'home') {
-
+              this.selected = [];
               this.documents = [];
               this.isDrawing = false;
               this.allSigned = false;
-
-
             } else if (name === 'files') {
+              if (docs.length) {
+                const prevDocs = this.documents || [];
+
+                this.documents = docs.map(doc => {
+                  const base64str = doc.base64.includes(',') ? doc.base64.split(',')[1] : doc.base64;
+                  const decodedHtml = this.decodeBase64Utf8(base64str);
+                  const cleanHtml = decodedHtml.replaceAll('@@firma-0', '<span style="display:none;">@@firma-0</span>');
+
+                  const existing = prevDocs.find(d => d.id === doc.id);
+                  if (existing) {
+                    const prevB64 =
+                      existing.base64Str
+                      ?? (existing.base64?.includes(',') ? existing.base64.split(',')[1] : existing.base64)
+                      ?? '';
+                    if (prevB64 && base64str && prevB64 === base64str) {
+                      return existing;
+                    } else {
+                      this.allSigned = false;
+                    }
+                  }
+
+                  return {
+                    ...doc,
+                    html: cleanHtml,
+                    signed: false,
+                    status: false,
+                    signature: '',
+                    base64Str: base64str,
+                    base64: doc.base64,
+                  };
+                });
+              }
               this.selected = [];
             }
           });
-
         })
-        .catch(err => console.error('Error al cargar vista:', err));
+        .catch(() => Swal.fire('Error', 'No fue posible cargar la vista.', 'error'));
     },
-    // Inicializa el canva para la firma
+
+    // Prepara el canvas y restaura previsualización de firma si existe
     initializeSignature() {
-      this.canvas = document.getElementById("draw-canvas");
-      this.ctx = this.canvas.getContext("2d");
+      this.canvas = document.getElementById('draw-canvas');
+      this.ctx = this.canvas.getContext('2d');
       this.configureCanvas();
 
-      const content = document.querySelector(".content");
-      if (content) {
-        content.style.zoom = "100%";
-      }
+      const content = document.querySelector('.content');
+      if (content) content.style.zoom = '100%';
 
       if (this.signaturePending) {
         const img = new Image();
         img.src = this.signaturePending;
-
         img.onload = () => {
-          this.clearCanvas(); // limpia antes si quieres
+          this.clearCanvas();
           this.ctx.drawImage(img, 0, 0, this.canvas.width, this.canvas.height);
         };
-
         this.signaturePending = null;
       }
     },
 
+    // Quita listeners del canvas para evitar duplicados/memoria
+    teardownSignatureListeners() {
+      if (!this.canvas) return;
+      this.canvas.removeEventListener('mousedown', this.initializeDrawing);
+      this.canvas.removeEventListener('mousemove', this.draw);
+      this.canvas.removeEventListener('mouseup', this.endDrawing);
+      this.canvas.removeEventListener('mouseleave', this.endDrawing);
+      this.canvas.removeEventListener('touchstart', this.startTouch, { passive: false });
+      this.canvas.removeEventListener('touchmove', this.drawTouch, { passive: false });
+      this.canvas.removeEventListener('touchend', this.endDrawing, { passive: false });
+    },
+
+    // Configura estilos del canvas y listeners de dibujo
     configureCanvas() {
-      this.ctx.lineCap = "round";
-      this.ctx.lineJoin = "round";
+      this.ctx.lineCap = 'round';
+      this.ctx.lineJoin = 'round';
       this.ctx.lineWidth = 2;
-      this.ctx.strokeStyle = "#000";
+      this.ctx.strokeStyle = '#000';
 
       this.canvas.addEventListener('mousedown', this.initializeDrawing);
       this.canvas.addEventListener('mousemove', this.draw);
@@ -168,34 +320,39 @@ window.app = new Vue({
       this.canvas.addEventListener('touchstart', this.startTouch, { passive: false });
       this.canvas.addEventListener('touchmove', this.drawTouch, { passive: false });
       this.canvas.addEventListener('touchend', this.endDrawing, { passive: false });
+
+      // Reset de caché del canvas en blanco (para isCanvasEmpty)
+      this._blankCache = { width: this.canvas.width, height: this.canvas.height, data: null };
     },
 
+    // Inicia un trazo con mouse
     initializeDrawing(e) {
       this.isDrawing = true;
       this.ctx.beginPath();
       this.ctx.moveTo(e.offsetX, e.offsetY);
     },
 
+    // Dibuja mientras el mouse está presionado
     draw(e) {
       if (!this.isDrawing) return;
       this.ctx.lineTo(e.offsetX, e.offsetY);
       this.ctx.stroke();
     },
 
+    // Finaliza un trazo
     endDrawing() {
       this.isDrawing = false;
     },
 
+    // Convierte coordenadas touch a coordenadas de canvas (con escala)
     getCanvasPos(touch) {
       const rect = this.canvas.getBoundingClientRect();
       const scaleX = this.canvas.width / rect.width;
       const scaleY = this.canvas.height / rect.height;
-      return {
-        x: (touch.clientX - rect.left) * scaleX,
-        y: (touch.clientY - rect.top) * scaleY
-      };
+      return { x: (touch.clientX - rect.left) * scaleX, y: (touch.clientY - rect.top) * scaleY };
     },
 
+    // Inicia un trazo con touch
     startTouch(e) {
       if (e.touches.length > 1) return;
       e.preventDefault();
@@ -205,6 +362,7 @@ window.app = new Vue({
       this.ctx.moveTo(pos.x, pos.y);
     },
 
+    // Dibuja con touch mientras hay un único dedo
     drawTouch(e) {
       if (!this.isDrawing || e.touches.length > 1) return;
       e.preventDefault();
@@ -213,10 +371,13 @@ window.app = new Vue({
       this.ctx.stroke();
     },
 
+    // Limpia el canvas y la caché de "en blanco"
     clearCanvas() {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this._blankCache.data = null;
     },
 
+    // Confirma y vuelve a la lista de archivos desde la vista de firma
     back() {
       Swal.fire({
         title: '¡Alerta!',
@@ -224,72 +385,68 @@ window.app = new Vue({
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Sí',
-        confirmButtonColor: '#d41717',
+        confirmButtonColor: '#f44336',
         cancelButtonText: 'No'
-      }).then(result => {
-        if (result.isConfirmed) {
-          this.changeComponent('files');
-        }
-      });
+      }).then(result => { if (result.isConfirmed) this.changeComponent('files'); });
     },
 
-    addZoom() {
-      this.ajustZoom(10);
-    },
-    lessZoom() {
-      this.ajustZoom(-10);
-    },
-
+    // Aumenta/Reduce/Ajusta zoom de la vista de firma
+    addZoom() { this.ajustZoom(10); },
+    lessZoom() { this.ajustZoom(-10); },
     ajustZoom(valor) {
-      const content = document.getElementsByClassName("page-signature")[0];
+      const content = document.getElementsByClassName('page-signature')[0];
+      if (!content) return;
       let currentZoom = parseInt(content.style.zoom) || 100;
       currentZoom = Math.max(100, Math.min(150, currentZoom + valor));
-      content.style.zoom = currentZoom + "%";
+      content.style.zoom = currentZoom + '%';
     },
 
+    // Guarda firma(s) en los documentos seleccionados y regresa a la lista
     async save() {
       if (this.isCanvasEmpty()) {
-        await Swal.fire({ title: '¡Error!', text: 'Debe dibujar una firma antes de guardar.', icon: 'error', confirmButtonText: 'Aceptar', confirmButtonColor: '#d41717' });
+        await Swal.fire({ title: '¡Error!', text: 'Debe firmar antes de guardar.', icon: 'error', confirmButtonText: 'Aceptar', confirmButtonColor: '#f44336' });
         return;
       }
 
-      // 1) Validar decisiones requeridas
+      // Validar decisiones requeridas
       const missing = (this.selected || []).filter(d =>
         d.requireDecision && ![true, false].includes(this.decisionTmp?.[d.id])
       );
       if (missing.length) {
         await Swal.fire({
-          title: 'Faltan decisiones',
-          text: `Selecciona Aprobar o Rechazar de: ${missing.map(f => f.name).join(', ')}`,
+          title: 'Warning',
+          text: `Selecciona acepto o no acepto en: ${missing.map(f => f.name).join(', ')}`,
           icon: 'warning',
           confirmButtonText: 'Entendido',
-          confirmButtonColor: '#d41717'
+          confirmButtonColor: '#f44336'
         });
         return;
       }
 
+      // Confirmación de guardado
       const confirm = await Swal.fire({
         title: '¡Alerta!',
         text: '¿Está seguro que desea guardar la firma?',
         icon: 'info',
         showCancelButton: true,
         confirmButtonText: 'Sí',
-        confirmButtonColor: '#d41717',
+        confirmButtonColor: '#f44336',
         cancelButtonText: 'No'
       });
       if (!confirm.isConfirmed) return;
 
-      const signatureData = this.canvas.toDataURL("image/png").split(',')[1];
+      const signatureData = this.canvas.toDataURL('image/png').split(',')[1];
 
       this.selected.forEach(sel => {
         const doc = this.documents.find(d => d.id === sel.id);
         if (!doc) return;
 
+        // Marca firma y estado
         doc.signature = signatureData;
         doc.signed = true;
         doc.status = 1;
 
-        // decisión si aplica
+        // Guarda decisión si aplica
         if (doc.requireDecision) {
           const val = this.decisionTmp?.[doc.id];
           if ([true, false].includes(val)) {
@@ -300,92 +457,34 @@ window.app = new Vue({
           }
         }
 
+        // Restaura placeholder y agrega badge si aplica
         let restoredHtml = doc.html.replace('<span style="display:none;">@@firma-0</span>', '@@firma-0');
-
         if (doc.requireDecision && [true, false].includes(doc.decision)) {
-          restoredHtml = this.injectBadgeIntoFirstDiv(restoredHtml, doc);
+          const aceptado = !!doc.decision;
+          const etiqueta = aceptado ? 'ACEPTADO' : 'NO ACEPTADO';
+          const color = aceptado ? '#4caf50' : '#f44336';
+          const fecha = this.formatDate(doc.decisionAt) || '';
+          doc.badge = {
+            'label': etiqueta,
+            'color': color,
+            'date': fecha,
+          };
         }
 
+        // Re-encode a base64 en UTF-8
         const utf8 = new TextEncoder().encode(restoredHtml);
         let bin = '';
-        utf8.forEach(b => bin += String.fromCharCode(b));
+        utf8.forEach(b => (bin += String.fromCharCode(b)));
         const newBase64 = btoa(bin);
-        doc.base64 = "data:text/html;base64," + newBase64;
+        doc.base64 = 'data:text/html;base64,' + newBase64;
       });
 
       this.selected = [];
       this.allSigned = this.documents.every(doc => doc.signed === true);
-
       this.changeComponent('files');
     },
 
-    injectBadgeIntoFirstDiv(html, doc) {
-      // Evitar duplicados si ya existe
-      if (/data-badge-estado="1"/i.test(html)) return html;
-
-      const aprobado = !!doc.decision;
-      const etiqueta = aprobado ? 'APROBADO' : 'RECHAZADO';
-      const color = aprobado ? '#1b5e20' : '#b71c1c';
-      const fecha = this.formatDate(doc.decisionAt) || '';
-
-      const badge = `
-        <div data-badge-estado="1" style="
-          position:absolute;top: 1.5rem; transform: rotate(-45deg);
-            left: 3rem; z-index:9999;
-          font-family:Arial,sans-serif;text-transform:uppercase;pointer-events:none;
-        ">
-          <div style="
-            display:inline-block;padding:6px 10px;border-radius:6px;
-            font-weight:700;letter-spacing:.5px;color:#fff;
-            background:${color};box-shadow:0 1px 2px rgba(0,0,0,.15);
-          ">${etiqueta}</div>
-          <div style="margin-top:4px;font-size:10pt;color:#333;">${fecha}</div>
-        </div>`.trim();
-
-      try {
-        // Parsear como documento HTML
-        const parser = new DOMParser();
-        const docHtml = parser.parseFromString(html, 'text/html');
-
-        // Buscar el PRIMER div del body
-        let firstDiv = docHtml.body.querySelector('div');
-        if (!firstDiv) {
-          // Si no hay <div>, creamos uno y metemos el contenido original dentro
-          firstDiv = docHtml.createElement('div');
-          firstDiv.style.position = 'relative';
-          firstDiv.innerHTML = html;  // preserva el contenido original
-          docHtml.body.innerHTML = '';
-          docHtml.body.appendChild(firstDiv);
-        } else {
-          // Asegurar posicionamiento relativo en el primer div
-          const pos = (firstDiv.getAttribute('style') || '');
-          if (!/position\s*:\s*relative/i.test(pos)) {
-            firstDiv.setAttribute('style', (pos ? pos.replace(/;?$/, ';') : '') + 'position:relative;');
-          }
-        }
-
-        // Insertar el badge como primer hijo del primer div
-        firstDiv.insertAdjacentHTML('afterbegin', badge);
-
-        // Devolver el HTML resultante (solo el body)
-        return docHtml.body.innerHTML;
-      } catch (e) {
-        // Fallback con regex si DOMParser falla
-        return html.replace(/<div\b([^>]*)>/i, (m, attrs) => {
-          // asegurar position:relative en style
-          if (/style\s*=/.test(attrs)) {
-            attrs = attrs.replace(/style\s*=\s*(['"])(.*?)\1/i, (s, q, css) => {
-              if (!/position\s*:\s*relative/i.test(css)) css = css.replace(/;?$/, ';') + 'position:relative;';
-              return `style=${q}${css}${q}`;
-            });
-          } else {
-            attrs = `${attrs} style="position:relative;"`;
-          }
-          return `<div${attrs}>${badge}`;
-        });
-      }
-    },
-
+    // Formatea fecha ISO a es-CO
     formatDate(iso) {
       if (!iso) return '';
       try {
@@ -396,66 +495,45 @@ window.app = new Vue({
       } catch { return ''; }
     },
 
-
+    // Va a la vista de firma con la selección actual
     signSelected() {
-
       if (this.selected.length === 0) {
         Swal.fire({
           title: '¡Alerta!',
           text: 'Selecciona al menos un documento para firmar.',
           icon: 'warning',
           confirmButtonText: 'Ok',
-          confirmButtonColor: '#d41717',
+          confirmButtonColor: '#f44336',
         });
         return;
       }
-
       this.$root.allSelected = this.selected;
       this.$root.changeComponent('signature');
     },
-    // Emite un evento con los documentos ya firmados
-    sendDocuments() {
-      this.allSigned = this.documents.every(doc => doc.signed === true);
 
-      if (!this.allSigned) {
-        Swal.fire('Faltan documentos por firmar', 'Debes firmar todos los documentos antes de continuar.', 'warning');
-        return;
-      } else {
-        window.socket.emit("saveSignature", {
-          documentsSigned: this.documents,
-          asigTo: this.user.id
-        });
-        Swal.fire({
-          title: 'Todos los documentos han sido firmados',
-          icon: 'success',
-          timer: 2000,
-          showConfirmButton: false
-        });
-        this.$root.changeComponent('home');
-      }
-    },
-
-    decodeBase64Utf8(base64str) {
-      const binary = Uint8Array.from(atob(base64str), c => c.charCodeAt(0));
-      return new TextDecoder('utf-8').decode(binary);
-    },
-
+    // Verifica si el canvas está en blanco (usa caché por rendimiento)
     isCanvasEmpty() {
-      const blankCanvas = document.createElement('canvas');
-      blankCanvas.width = this.canvas.width;
-      blankCanvas.height = this.canvas.height;
+      if (!this.canvas) return true;
+      const { width, height } = this.canvas;
 
-      const blank = blankCanvas.getContext('2d').getImageData(0, 0, this.canvas.width, this.canvas.height).data;
-      const actual = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height).data;
-
-      for (let i = 0; i < actual.length; i++) {
-        if (actual[i] !== blank[i]) {
-          return false; // Hay alguna diferencia
-        }
+      if (!this._blankCache.data || this._blankCache.width !== width || this._blankCache.height !== height) {
+        const blank = document.createElement('canvas');
+        blank.width = width; blank.height = height;
+        this._blankCache = {
+          width, height,
+          data: blank.getContext('2d').getImageData(0, 0, width, height).data
+        };
       }
-      return true; // Es idéntico al canvas vacío
+
+      const actual = this.ctx.getImageData(0, 0, width, height).data;
+      const blankData = this._blankCache.data;
+      for (let i = 0; i < actual.length; i++) {
+        if (actual[i] !== blankData[i]) return false;
+      }
+      return true;
     },
-    // Remueve la firma de un documento para firmarlo nuevamente
+
+    // Permite re-firmar un documento y precarga la firma anterior como guía
     signAgain(doc) {
       Swal.fire({
         title: '¡Alerta!',
@@ -463,7 +541,7 @@ window.app = new Vue({
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Sí',
-        confirmButtonColor: '#d41717',
+        confirmButtonColor: '#f44336',
         cancelButtonText: 'No'
       }).then(async result => {
         if (result.isConfirmed) {
@@ -480,24 +558,92 @@ window.app = new Vue({
       });
     },
 
-    loginForm() {
-      if (this.user.name.trim() == "" || this.user.id.trim() == "") {
-        Swal.fire({
-          title: '¡Alerta!',
-          text: 'Complete los campos del formulario para continuar',
+    // Decodifica base64 (UTF-8 safe) a texto plano
+    decodeBase64Utf8(base64str) {
+      const binary = Uint8Array.from(atob(base64str), c => c.charCodeAt(0));
+      return new TextDecoder('utf-8').decode(binary);
+    },
+
+    // Envía todos los documentos firmados al servidor vía socket
+    sendDocuments() {
+      this.allSigned = this.documents.every(doc => doc.signed === true);
+      if (!this.allSigned) {
+        Swal.fire('Faltan documentos por firmar', 'Debes firmar todos los documentos antes de continuar.', 'warning');
+        return;
+      }
+      window.socket.emit('saveSignature', {
+        documentsSigned: this.documents,
+        session: { projectId: this.user.projectId, userId: this.user.id },
+        asigTo: this.user.id
+      });
+      Swal.fire({ title: 'Todos los documentos han sido firmados', icon: 'success', timer: 2000, showConfirmButton: false });
+      this.$root.changeComponent('home');
+    },
+
+    async loginForm() {
+      if (this._submitting) return;
+      this._submitting = true;
+
+      const projectId = String(this.user?.project ?? '').trim();
+      const name = String(this.user?.name ?? '').trim();
+      const idRaw = this.user?.id;
+      const id = String(idRaw ?? '').trim();
+
+      const missing = [];
+      if (!projectId) missing.push('Plataforma');
+      if (!name) missing.push('Nombre completo');
+      if (!id) missing.push('Número de documento');
+
+      if (missing.length) {
+        await Swal.fire({
+          title: 'Campos incompletos',
+          html: `Revise: <b>${missing.join(', ')}</b>`,
           icon: 'warning',
-          showCancelButton: false,
-          confirmButtonText: 'OK',
-          confirmButtonColor: '#d41717',
+          allowOutsideClick: false,
+          confirmButtonText: 'Entendido',
+          confirmButtonColor: '#f44336',
         });
-      } else {
-        Swal.fire("Vinculación exitosa", '', "success");
-        localStorage.setItem('tabletUser', JSON.stringify(this.user));
-        setTimeout(() => {
-          location.reload();
-        }, 2000);
+        this._submitting = false;
+        return;
+      }
+
+      const tabletUser = {
+        projectId,
+        name,
+        id,
+        createdAt: new Date().toISOString(),
+      };
+
+      try {
+        localStorage.setItem('tabletUser', JSON.stringify(tabletUser));
+
+        await Swal.fire({
+          title: 'Vinculación exitosa',
+          icon: 'success',
+          timer: 1600,
+          showConfirmButton: false,
+          allowOutsideClick: false,
+        });
+
+        location.reload();
+      } catch (e) {
+        await Swal.fire({
+          title: 'No se pudo guardar la sesión',
+          text: 'Verifique permisos del navegador o intente de nuevo.',
+          icon: 'error',
+          allowOutsideClick: false,
+        });
+      } finally {
+        this._submitting = false;
       }
     },
+    toggleSelect() {
+      this.selectOpen = !this.selectOpen;
+    },
+    chooseOption(opt) {
+      this.user.project = opt.value;
+      this.selectOpen = false;
+    },
+
   }
 });
-

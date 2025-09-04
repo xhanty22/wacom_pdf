@@ -1,7 +1,7 @@
 <div>
   <div class="options-container">
     <div class="options">
-      <img class="head-logo" :src="$parent.configProject.logo || 'assets/img/home/logo.jpg'" width="" />
+      <img class="head-logo" :src="$root.configProject.logo || 'assets/img/home/logo.jpg'" width="" />
     </div>
   </div>
   <div class="content">
@@ -9,23 +9,23 @@
     <div class="content-page">
       <div class="page-documents">
         <h2 class="main-title">Firmar documentos</h2>
-        <p class="subtitle" v-if="!$parent.allSigned">Por favor, seleccione los documentos que desea firmar de la
+        <p class="subtitle" v-if="!$root.allSigned">Por favor, seleccione los documentos que desea firmar de la
           lista
           a continuación:</p>
 
         <div class="documents">
-          <div class="flex justify-end" v-if="!$parent.allSigned">
-            <a class="select-all" href="#" @click.prevent="$parent.toggleSelectAll">
-              {{ $parent.allSelected ? 'Quitar selección' : 'Seleccionar todos' }}
+          <div class="flex justify-end" v-if="!$root.allSigned">
+            <a class="select-all" href="#" @click.prevent="$root.toggleSelectAll">
+              {{ $root.allSelected ? 'Quitar selección' : 'Seleccionar todos' }}
             </a>
           </div>
           <ul>
-            <li v-for="(doc, index) in $parent.documents" :key="index">
+            <li v-for="(doc, index) in $root.documents" :key="index">
               <label>
                 <template v-if="!doc.signed">
                   <div class="row-document">
                     <span class="left-content">
-                      <input type="checkbox" class="input-checkbox" :value="doc" v-model="$parent.selected" />
+                      <input type="checkbox" class="input-checkbox" :value="doc" v-model="$root.selected" />
                       {{ doc.name }}
                     </span>
 
@@ -49,12 +49,12 @@
                             'is-pending': doc.decision === null || doc.decision === undefined
                           }">
                         <span class="label">
-                          {{ doc.decision === true ? 'Aprobado' : (doc.decision === false ? 'Rechazado' : 'Pendiente')
+                          {{ doc.decision === true ? 'Aprobado' : (doc.decision === false ? 'No aceptado' : 'Aceptado')
                           }}
                         </span>
                       </span>
 
-                      <img class="img-edit" src="assets/img/edit.png" alt="" @click="$parent.signAgain(doc)">
+                      <img class="img-edit" src="assets/img/edit.png" alt="" @click="$root.signAgain(doc)">
                     </div>
                   </div>
                 </template>
@@ -63,11 +63,11 @@
           </ul>
         </div>
         <div class="div-center">
-          <button class="signature-button" @click="$parent.signSelected"
-            :disabled="$parent.selected.length === 0" v-if="!$parent.allSigned">
+          <button class="signature-button" @click="$root.signSelected"
+            :disabled="$root.selected.length === 0" v-if="!$root.allSigned">
             <img src="assets/img/signature.png" alt="Icono"> Firmar documentos seleccionados
           </button>
-          <button class="send-button" @click="$parent.sendDocuments" v-if="$parent.allSigned">
+          <button class="send-button" @click="$root.sendDocuments" v-if="$root.allSigned">
             <img src="assets/img/send.png" alt="Icono"> Enviar documentos firmados
           </button>
         </div>

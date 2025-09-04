@@ -1,50 +1,65 @@
 <div>
   <div class="options-container">
-    <div class="options-container">
-      <div class="options">
-        <a @click="$parent.back" class="btn btn-primary" title="Regresar">
-          <img src="assets/img/back.png" width="35" />
-        </a>
-        <a @click="$parent.addZoom" class="btn btn-primary" title="Aumentar Zoom">
-          <img src="assets/img/add.png" width="35" />
-        </a>
-        <a @click="$parent.lessZoom" class="btn btn-primary" title="Dismunuir Zoom">
-          <img src="assets/img/less.png" width="35" />
-        </a>
-      </div>
+    <div class="options-left">
+      <a @click="$root.back" class="btn btn-primary" title="Regresar">
+        <img class="icon-ctl" src="assets/img/back.png" alt="Regresar">
+      </a>
     </div>
+
+    <div class="options-center">
+      <a @click="$root.addZoom" class="btn btn-primary" title="Aumentar Zoom">
+        <img class="icon-ctl" src="assets/img/add.png" alt="Aumentar Zoom">
+      </a>
+      <a @click="$root.lessZoom" class="btn btn-primary" title="Disminuir Zoom">
+        <img class="icon-ctl" src="assets/img/less.png" alt="Disminuir Zoom">
+      </a>
+    </div>
+
+    <div class="options-right-spacer"></div>
   </div>
   <div class="content">
 
     <div class="content-page">
       <div class="page-signature">
-        <div class="files" v-for="(file, index) in $parent.selected" :key="file.id || index">
+        <div class="files" v-for="(file, index) in $root.selected" :key="file.id || index">
           <div class="content-document" v-html="file.html"></div>
 
-          <!-- Decisión por documento (si aplica) -->
           <div class="fila-decision" v-if="file.requireDecision">
             <div class="group-buttons">
-              <button type="button" class="btn-decision aprobar"
-                :class="{ active: $parent.decisionTmp[file.id] === true }" @click="$parent.setDecision(file.id, true)">
-                Aprobar
+              <button type="button" class="btn-decision aprobar" :class="{ 
+                  active: $root.decisionTmp[file.id] === true,
+                  dim:    $root.decisionTmp[file.id] === false 
+                }" @click="$root.setDecision(file.id, true)">
+                <img src="assets/img/approved.png" alt="Icono">Acepto
               </button>
-              <button type="button" class="btn-decision rechazar"
-                :class="{ active: $parent.decisionTmp[file.id] === false }" @click="$parent.setDecision(file.id, false)">
-                Rechazar
+
+              <button type="button" class="btn-decision rechazar" :class="{
+                          active: $root.decisionTmp[file.id] === false,
+                          dim:    $root.decisionTmp[file.id] === true
+                        }" @click="$root.setDecision(file.id, false)">
+                <img src="assets/img/cancel.png" alt="Icono">No acepto
               </button>
             </div>
           </div>
         </div>
 
         <div class="div-signature">
+          <hr>
           <canvas id="draw-canvas" height="200" width="400" class="signature-pad"></canvas>
-          <a class="clear-button" @click="$parent.clearCanvas">Limpiar</a>
-          <div class="div-save">
-            <button class="signature-button" @click="$parent.save" title="Guardar">Guardar</button>
+          <div class="row">
+            <div class="col">
+              <button class="clear-button" @click="$root.clearCanvas">
+                <img src="assets/img/clear.png" alt="Icono"> Limpiar</button>
+
+            </div>
+            <div class="col">
+              <button class="signature-button" @click="$root.save">
+                <img src="assets/img/save.png" alt="Icono"> Guardar</button>
+
+            </div>
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </div>

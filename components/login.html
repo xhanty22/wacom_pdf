@@ -1,7 +1,7 @@
 <div>
   <div class="options-container">
     <div class="options">
-      <img class="head-logo" :src="$parent.configProject.logo || 'assets/img/home/logo.jpg'" width="" />
+      <!-- <img class="head-logo" :src="$root.configProject.logo || 'assets/img/home/logo.jpg'" width="" /> -->
     </div>
   </div>
   <div class="content">
@@ -9,19 +9,37 @@
     <div class="content-page">
       <div class="page-documents">
         <h2 class="main-title">Vincular dispositivo</h2>
-        <p class="subtitle">Ingresa tu nombre y número de documento para conectar este dispositivo.</p>
+        <p class="subtitle">Complete el formulario para vincular este dispositivo.</p>
         <div class="form">
+          <div class="form-input select-wrap" :class="{ open: $root.selectOpen }">
+            <label>Plataforma</label>
+
+            <!-- Select -->
+            <div class="select-btn" @click="$root.toggleSelect()">
+              <span v-if="!$root.selectedLabel" class="select-placeholder">Seleccione</span>
+              <span v-else>{{ $root.selectedLabel }}</span>
+              <span class="select-caret">▾</span>
+            </div>
+
+            <!-- Lista desplegable -->
+            <ul v-if="$root.selectOpen" class="select-list">
+              <li v-for="opt in $root.optionsProject" :key="opt.value" class="select-item"
+                :class="{ 'is-selected': $root.user.project === opt.value }" @click="$root.chooseOption(opt)">
+                {{ opt.label }}
+              </li>
+            </ul>
+          </div>
           <div class="form-input">
-            <label for="">Nombre</label>
-            <input class="form-control" type="text" v-model="$parent.user.name">
+            <label for="">Nombre completo</label>
+            <input class="form-control" type="text" v-model="$root.user.name">
           </div>
           <div class="form-input">
             <label for="">Número de documento</label>
-            <input class="form-control" type="number" v-model="$parent.user.id">
+            <input class="form-control" type="text" v-model="$root.user.id">
           </div>
         </div>
         <div class="div-center">
-          <button class="send-button" @click="$parent.loginForm">Conectar dispositivo</button>
+          <button class="send-button" @click="$root.loginForm">Vincular dispositivo</button>
         </div>
       </div>
     </div>

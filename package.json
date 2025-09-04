@@ -1,7 +1,7 @@
 {
   "name": "complementoshumanos",
   "productName": "Complementos Humanos",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "author": "Develop",
   "description": "Gestión Interna de Complementos Humanos",
   "main": "main.js",

@@ -34,7 +34,8 @@ function createMainWindow() {
   mainWindow.setFullScreen(true);
   mainWindow.loadFile("index.html");
 
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
+
 
   // ---------- Auto-Update SOLO en build empaquetada ----------
   if (app.isPackaged) {

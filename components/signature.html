@@ -24,22 +24,41 @@
         <div class="files" v-for="(file, index) in $root.selected" :key="file.id || index">
           <div class="content-document" v-html="file.html"></div>
 
-          <div class="fila-decision" v-if="file.requireDecision">
+          <div class="fila-decision" v-if="file.requireDecision && file.decisionScope !== 'group'">
             <div class="group-buttons">
               <button type="button" class="btn-decision aprobar" :class="{ 
-                  active: $root.decisionTmp[file.id] === true,
-                  dim:    $root.decisionTmp[file.id] === false 
-                }" @click="$root.setDecision(file.id, true)">
+        active: $root.decisionTmp[file.id] === true,
+        dim:    $root.decisionTmp[file.id] === false 
+      }" @click="$root.setDecision(file.id, true)">
                 <img src="assets/img/approved.png" alt="Icono">Acepto
               </button>
 
               <button type="button" class="btn-decision rechazar" :class="{
-                          active: $root.decisionTmp[file.id] === false,
-                          dim:    $root.decisionTmp[file.id] === true
-                        }" @click="$root.setDecision(file.id, false)">
+        active: $root.decisionTmp[file.id] === false,
+        dim:    $root.decisionTmp[file.id] === true
+      }" @click="$root.setDecision(file.id, false)">
                 <img src="assets/img/cancel.png" alt="Icono">No acepto
               </button>
             </div>
+          </div>
+
+          <hr>
+        </div>
+
+        <!-- Decisión única para el grupo seleccionado -->
+        <div class="fila-decision" v-if="$root.hasGroupDecision">
+          <div class="group-buttons">
+            <button type="button" class="btn-decision aprobar"
+              :class="{ active: $root.groupDecision === true, dim: $root.groupDecision === false }"
+              @click="$root.groupDecision = true">
+              <img src="assets/img/approved.png" alt="Icono">Acepto
+            </button>
+
+            <button type="button" class="btn-decision rechazar"
+              :class="{ active: $root.groupDecision === false, dim: $root.groupDecision === true }"
+              @click="$root.groupDecision = false">
+              <img src="assets/img/cancel.png" alt="Icono">No acepto
+            </button>
           </div>
         </div>
 

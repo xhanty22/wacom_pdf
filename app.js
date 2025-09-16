@@ -34,6 +34,7 @@ window.app = new Vue({
 
     // Decisiones por documento
     decisionTmp: {},
+    groupDecision: null,
 
     // Presencia web
     webPresence: { connected: null, count: 0, lastTs: 0, offline: true },
@@ -102,6 +103,21 @@ window.app = new Vue({
       const id = Number(this.$root.user.projectId); // por si viene como string
       const opt = this.$root.optionsProject.find(o => o.value === id);
       return opt ? opt.imageDefault : 'assets/img/default.jpg'; // fallback
+    },
+    // ... lo que ya tienes
+    hasGroupDecision() {
+      // ¿Hay exactamente un batch con decisionScope='group' dentro de la selección?
+      const batches = Array.from(new Set(
+        (this.selected || [])
+          .filter(d => d.requireDecision && d.decisionScope === 'group')
+          .map(d => d.batchId)
+      ));
+      return batches.length === 1;
+    },
+    groupDecisionBatchId() {
+      if (!this.hasGroupDecision) return null;
+      return (this.selected || [])
+        .find(d => d.requireDecision && d.decisionScope === 'group')?.batchId || null;
     }
   },
 
@@ -205,7 +221,52 @@ window.app = new Vue({
     // Selecciona/deselecciona todos los documentos sin firmar
     toggleSelectAll() {
       const unsigned = this.documents.filter(doc => !doc.signed);
-      this.selected = (this.selected.length === unsigned.length) ? [] : unsigned;
+
+      // Si ya están todos, deselecciona todos los NO locked
+      if (this.selected.length === unsigned.length) {
+        const locked = new Set(this.documents.filter(d => d.locked).map(d => d.id));
+        this.selected = this.selected.filter(s => locked.has(s.id));
+        return;
+      }
+
+      // Seleccionar todos: incluye grupos completos y docs sueltos
+      const batchesSeen = new Set();
+      const next = [];
+
+      for (const d of unsigned) {
+        if (d.signingScope === 'group') {
+          if (batchesSeen.has(d.batchId)) continue;
+          batchesSeen.add(d.batchId);
+          next.push(...this.documents.filter(x => x.batchId === d.batchId));
+        } else {
+          next.push(d);
+        }
+      }
+
+      // Unicos por id
+      const uniq = new Map(next.map(d => [d.id, d]));
+      this.selected = Array.from(uniq.values());
+      this.syncLockedSelection();
+    },
+    preselectGroupDocs() {
+      // agrega a "selected" todos los docs cuyo signingScope sea 'group' (por batch completo)
+      const setSel = new Map((this.selected || []).map(d => [d.id, d]));
+
+      // agrupa por batchId los que son de grupo
+      const groupBatches = Array.from(new Set(
+        (this.documents || [])
+          .filter(d => d.signingScope === 'group')
+          .map(d => d.batchId)
+      ));
+
+      groupBatches.forEach(batchId => {
+        this.documents
+          .filter(d => d.batchId === batchId)
+          .forEach(d => setSel.set(d.id, d));
+      });
+
+      this.selected = Array.from(setSel.values());
+      this.syncLockedSelection?.(); // respeta locked
     },
 
     // Cambia de componente y normaliza documentos recibidos
@@ -257,6 +318,13 @@ window.app = new Vue({
 
                   return {
                     ...doc,
+
+                    batchId: doc.batchId || 'consentimientos',
+                    decisionScope: doc.decisionScope || 'per-doc',
+                    signingScope: doc.signingScope || 'per-doc',
+                    editScope: doc.editScope || 'per-doc',
+                    locked: !!doc.locked,
+
                     html: cleanHtml,
                     signed: false,
                     status: false,
@@ -267,6 +335,8 @@ window.app = new Vue({
                 });
               }
               this.selected = [];
+              this.preselectGroupDocs();
+              this.syncLockedSelection?.();
             }
           });
         })
@@ -408,14 +478,14 @@ window.app = new Vue({
         return;
       }
 
-      // Validar decisiones requeridas
-      const missing = (this.selected || []).filter(d =>
-        d.requireDecision && ![true, false].includes(this.decisionTmp?.[d.id])
-      );
-      if (missing.length) {
+      // ---- NUEVO: Validaciones de decisión ----
+      const selected = this.selected || [];
+
+      // 1) Si hay grupo, la decisión grupal debe estar definida
+      if (this.hasGroupDecision && ![true, false].includes(this.groupDecision)) {
         await Swal.fire({
-          title: 'Warning',
-          text: `Selecciona acepto o no acepto en: ${missing.map(f => f.name).join(', ')}`,
+          title: 'Falta decisión del grupo',
+          text: 'Selecciona Acepto / No acepto para el grupo.',
           icon: 'warning',
           confirmButtonText: 'Entendido',
           confirmButtonColor: '#f44336'
@@ -423,7 +493,24 @@ window.app = new Vue({
         return;
       }
 
-      // Confirmación de guardado
+      // 2) Verificar decisiones faltantes SOLO para docs per-doc
+      const missingPerDoc = selected.filter(d =>
+        d.requireDecision &&
+        d.decisionScope !== 'group' &&
+        ![true, false].includes(this.decisionTmp?.[d.id])
+      );
+      if (missingPerDoc.length) {
+        await Swal.fire({
+          title: 'Warning',
+          text: `Selecciona acepto o no acepto en: ${missingPerDoc.map(f => f.name).join(', ')}`,
+          icon: 'warning',
+          confirmButtonText: 'Entendido',
+          confirmButtonColor: '#f44336'
+        });
+        return;
+      }
+
+      // Confirmación de guardado (igual que ya tenías)
       const confirm = await Swal.fire({
         title: '¡Alerta!',
         text: '¿Está seguro que desea guardar la firma?',
@@ -437,41 +524,49 @@ window.app = new Vue({
 
       const signatureData = this.canvas.toDataURL('image/png').split(',')[1];
 
+      // ---- Aplicar firma + decisión a cada doc seleccionado ----
+      const nowIso = new Date().toISOString();
+      const groupBatch = this.groupDecisionBatchId;
+
       this.selected.forEach(sel => {
         const doc = this.documents.find(d => d.id === sel.id);
         if (!doc) return;
 
-        // Marca firma y estado
+        // Firma
         doc.signature = signatureData;
         doc.signed = true;
         doc.status = 1;
 
-        // Guarda decisión si aplica
+        // Decisión
         if (doc.requireDecision) {
-          const val = this.decisionTmp?.[doc.id];
+          let val = null;
+          if (this.hasGroupDecision && groupBatch && doc.decisionScope === 'group' && doc.batchId === groupBatch) {
+            // usar la decisión grupal
+            val = this.groupDecision;
+          } else {
+            // usar la decisión individual
+            val = this.decisionTmp?.[doc.id];
+          }
+
           if ([true, false].includes(val)) {
             doc.decision = val;
-            doc.decisionAt = new Date().toISOString();
+            doc.decisionAt = nowIso;
           } else {
             doc.decision = null;
           }
         }
 
-        // Restaura placeholder y agrega badge si aplica
+        // Restaura placeholder y agrega badge si aplica (igual que ya tenías)
         let restoredHtml = doc.html.replace('<span style="display:none;">@@firma-0</span>', '@@firma-0');
         if (doc.requireDecision && [true, false].includes(doc.decision)) {
           const aceptado = !!doc.decision;
           const etiqueta = aceptado ? 'ACEPTADO' : 'NO ACEPTADO';
           const color = aceptado ? '#4caf50' : '#f44336';
           const fecha = this.formatDate(doc.decisionAt) || '';
-          doc.badge = {
-            'label': etiqueta,
-            'color': color,
-            'date': fecha,
-          };
+          doc.badge = { label: etiqueta, color, date: fecha };
         }
 
-        // Re-encode a base64 en UTF-8
+        // Re-encode a base64 en UTF-8 (igual que ya tenías)
         const utf8 = new TextEncoder().encode(restoredHtml);
         let bin = '';
         utf8.forEach(b => (bin += String.fromCharCode(b)));
@@ -479,10 +574,13 @@ window.app = new Vue({
         doc.base64 = 'data:text/html;base64,' + newBase64;
       });
 
+      // Limpieza y salida (igual)
       this.selected = [];
+      this.groupDecision = null;            // <- reset decisión de grupo
       this.allSigned = this.documents.every(doc => doc.signed === true);
       this.changeComponent('files');
     },
+
 
     // Formatea fecha ISO a es-CO
     formatDate(iso) {
@@ -505,6 +603,15 @@ window.app = new Vue({
           confirmButtonText: 'Ok',
           confirmButtonColor: '#f44336',
         });
+        return;
+      }
+
+      // Máximo 1 grupo a la vez
+      const groups = Array.from(new Set(
+        this.selected.filter(d => d.signingScope === 'group').map(d => d.batchId)
+      ));
+      if (groups.length > 1) {
+        Swal.fire('Atención', 'Solo puedes firmar un grupo a la vez.', 'warning');
         return;
       }
       this.$root.allSelected = this.selected;
@@ -531,6 +638,28 @@ window.app = new Vue({
         if (actual[i] !== blankData[i]) return false;
       }
       return true;
+    },
+
+    editSelectedGroup() {
+      const groups = Array.from(new Set(
+        this.selected.filter(d => d.editScope === 'group').map(d => d.batchId)
+      ));
+      if (groups.length !== 1) {
+        Swal.fire('Atención', 'Selecciona exactamente un grupo para editar.', 'info');
+        return;
+      }
+      const batchId = groups[0];
+      const docs = this.documents.filter(d => d.batchId === batchId);
+      console.log(docs);
+      docs.forEach(doc => {
+        doc.signed = false;
+        doc.status = 0;
+        this.signaturePending = 'data:image/png;base64,' + doc.signature;
+      });
+      this.selected = docs;
+      this.allSigned = false;
+      this.changeComponent('signature', this.documents);
+
     },
 
     // Permite re-firmar un documento y precarga la firma anterior como guía
@@ -635,6 +764,67 @@ window.app = new Vue({
         });
       } finally {
         this._submitting = false;
+      }
+    },
+    // Mantener locked siempre seleccionados
+    syncLockedSelection() {
+      const lockedDocs = (this.documents || []).filter(d => d.locked);
+      const lockedIds = new Set(lockedDocs.map(d => d.id));
+      const keep = new Map((this.selected || []).map(d => [d.id, d]));
+      lockedDocs.forEach(d => keep.set(d.id, d));
+
+      // Limpia seleccionados que ya no existan
+      const validIds = new Set((this.documents || []).map(d => d.id));
+      this.selected = Array.from(keep.values()).filter(d => validIds.has(d.id));
+    },
+
+    // ¿Es doc de grupo en alguna dimensión?
+    isGroupDoc(doc) {
+      return (
+        doc?.signingScope === 'group' ||
+        doc?.decisionScope === 'group' ||
+        doc?.editScope === 'group'
+      );
+    },
+
+    // Checked/Disabled del checkbox
+    isChecked(doc) {
+      return doc.locked || !!this.selected.find(x => x.id === doc.id);
+    },
+    isDisabled(doc) {
+      if (doc.locked) return true;              // locked no se toca
+      if (doc.signingScope === 'group') return true; // bloquea selección individual de grupos
+      return false;
+    },
+
+    // Toggle de un checkbox
+    onToggle(doc, ev) {
+      if (this.isDisabled(doc)) { ev.preventDefault(); return; }
+
+      const checked = ev.target.checked;
+
+      if (this.isGroupDoc(doc)) {
+        // Si es de grupo, selecciona/deselecciona TODO su batch
+        const batch = doc.batchId;
+        const groupDocs = this.documents.filter(d => d.batchId === batch);
+        if (checked) {
+          const setSel = new Map(this.selected.map(d => [d.id, d]));
+          groupDocs.forEach(d => setSel.set(d.id, d));
+          this.selected = Array.from(setSel.values());
+        } else {
+          // quita todos los del grupo excepto locked
+          const groupIds = new Set(groupDocs.map(d => d.id));
+          this.selected = this.selected.filter(s => !groupIds.has(s.id) || s.locked);
+        }
+        this.syncLockedSelection();
+        return;
+      }
+
+      // Individual
+      if (checked) {
+        if (!this.selected.find(s => s.id === doc.id)) this.selected.push(doc);
+      } else {
+        if (!doc.locked) this.selected = this.selected.filter(s => s.id !== doc.id);
       }
     },
     toggleSelect() {

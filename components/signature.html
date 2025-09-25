@@ -1,16 +1,16 @@
 <div>
   <div class="options-container">
     <div class="options-left">
-      <a @click="$root.back" class="btn btn-primary" title="Regresar">
+      <a @click="$root.back()" class="btn btn-primary" title="Regresar">
         <img class="icon-ctl" src="assets/img/back.png" alt="Regresar">
       </a>
     </div>
 
     <div class="options-center">
-      <a @click="$root.addZoom" class="btn btn-primary" title="Aumentar Zoom">
+      <a @click="$root.addZoom()" class="btn btn-primary" title="Aumentar Zoom">
         <img class="icon-ctl" src="assets/img/add.png" alt="Aumentar Zoom">
       </a>
-      <a @click="$root.lessZoom" class="btn btn-primary" title="Disminuir Zoom">
+      <a @click="$root.lessZoom()" class="btn btn-primary" title="Disminuir Zoom">
         <img class="icon-ctl" src="assets/img/less.png" alt="Disminuir Zoom">
       </a>
     </div>
@@ -21,64 +21,81 @@
 
     <div class="content-page">
       <div class="page-signature">
-        <div class="files" v-for="(file, index) in $root.selected" :key="file.id || index">
-          <div class="content-document" v-html="file.html"></div>
+        <div class="viewer">
+          <div class="viewer-x" tabindex="0">
+            <div class="viewer-scale" :style="$root.viewerStyle">
+              <div class="files" v-for="(file, index) in $root.selected" :key="file.id || index">
+                <div class="content-document" v-html="file.html"></div>
 
-          <div class="fila-decision" v-if="file.requireDecision && file.decisionScope !== 'group'">
-            <div class="group-buttons">
-              <button type="button" class="btn-decision aprobar" :class="{ 
-        active: $root.decisionTmp[file.id] === true,
-        dim:    $root.decisionTmp[file.id] === false 
-      }" @click="$root.setDecision(file.id, true)">
-                <img src="assets/img/approved.png" alt="Icono">Acepto
-              </button>
+                <div class="fila-decision" v-if="file.requireDecision && file.decisionScope !== 'group'">
+                  <div class="group-buttons">
+                    <button type="button" class="btn-decision aprobar" :class="{ 
+          active: $root.decisionTmp[file.id] === true,
+          dim:    $root.decisionTmp[file.id] === false 
+        }" @click="$root.setDecision(file.id, true)">
+                      <img src="assets/img/approved.png" alt="Icono">Acepto
+                    </button>
 
-              <button type="button" class="btn-decision rechazar" :class="{
-        active: $root.decisionTmp[file.id] === false,
-        dim:    $root.decisionTmp[file.id] === true
-      }" @click="$root.setDecision(file.id, false)">
-                <img src="assets/img/cancel.png" alt="Icono">No acepto
-              </button>
+                    <button type="button" class="btn-decision rechazar" :class="{
+          active: $root.decisionTmp[file.id] === false,
+          dim:    $root.decisionTmp[file.id] === true
+        }" @click="$root.setDecision(file.id, false)">
+                      <img src="assets/img/cancel.png" alt="Icono">No acepto
+                    </button>
+                  </div>
+                </div>
+
+                <hr>
+              </div>
+
+              <!-- Decisión única para el grupo seleccionado -->
+              <div class="fila-decision" v-if="$root.hasGroupDecision">
+                <div class="group-buttons">
+                  <button type="button" class="btn-decision aprobar"
+                    :class="{ active: $root.groupDecision === true, dim: $root.groupDecision === false }"
+                    @click="$root.groupDecision = true">
+                    <img src="assets/img/approved.png" alt="Icono">Acepto
+                  </button>
+
+                  <button type="button" class="btn-decision rechazar"
+                    :class="{ active: $root.groupDecision === false, dim: $root.groupDecision === true }"
+                    @click="$root.groupDecision = false">
+                    <img src="assets/img/cancel.png" alt="Icono">No acepto
+                  </button>
+                </div>
+              </div>
+
+              <div class="div-signature">
+                <canvas id="draw-canvas" height="230" width="500" class="signature-pad"></canvas>
+                <div class="row">
+                  <div class="col">
+                    <button class="clear-button" @click="$root.clearCanvas">
+                      <img src="assets/img/clear.png" alt="Icono"> Limpiar</button>
+
+                  </div>
+                  <div class="col">
+                    <button class="signature-button" @click="$root.save">
+                      <img src="assets/img/save.png" alt="Icono"> Guardar</button>
+
+                  </div>
+                </div>
+              </div>
+              <div class="scroll-spacer" aria-hidden="true"></div>
             </div>
           </div>
 
-          <hr>
         </div>
 
-        <!-- Decisión única para el grupo seleccionado -->
-        <div class="fila-decision" v-if="$root.hasGroupDecision">
-          <div class="group-buttons">
-            <button type="button" class="btn-decision aprobar"
-              :class="{ active: $root.groupDecision === true, dim: $root.groupDecision === false }"
-              @click="$root.groupDecision = true">
-              <img src="assets/img/approved.png" alt="Icono">Acepto
-            </button>
-
-            <button type="button" class="btn-decision rechazar"
-              :class="{ active: $root.groupDecision === false, dim: $root.groupDecision === true }"
-              @click="$root.groupDecision = false">
-              <img src="assets/img/cancel.png" alt="Icono">No acepto
-            </button>
-          </div>
-        </div>
-
-        <div class="div-signature">
-          <hr>
-          <canvas id="draw-canvas" height="200" width="400" class="signature-pad"></canvas>
-          <div class="row">
-            <div class="col">
-              <button class="clear-button" @click="$root.clearCanvas">
-                <img src="assets/img/clear.png" alt="Icono"> Limpiar</button>
-
-            </div>
-            <div class="col">
-              <button class="signature-button" @click="$root.save">
-                <img src="assets/img/save.png" alt="Icono"> Guardar</button>
-
-            </div>
-          </div>
-        </div>
       </div>
+    </div>
+
+    <div class="sfab-wrap">
+      <a @click="$root.scrollStep(-1)" class="btn btn-primary sfab-up" title="Subur">
+        <img class="icon-ctl" src="assets/img/back.png">
+      </a>
+      <a @click="$root.scrollStep(1)" class="btn btn-primary sfab-down" title="Bajar">
+        <img class="icon-ctl" src="assets/img/back.png">
+      </a>
     </div>
   </div>
 </div>

@@ -44,6 +44,8 @@ window.app = new Vue({
     // Otros flags internos
     _submitting: false,
     _blankCache: { width: 0, height: 0, data: null },
+
+    zoom: 1,
   },
 
   // Al montar: hotkey limpieza, validar sesión, iniciar socket y carrusel
@@ -87,8 +89,23 @@ window.app = new Vue({
     clearInterval(this.intervalId);
     this.teardownSignatureListeners();
   },
-
+  watch: {
+    zoom() {
+      this.$nextTick(this.syncScrollArea);
+    }
+  },
   computed: {
+    syncScrollArea() {
+      const scaled = document.querySelector('.viewer-scale');
+      const spacer = document.querySelector('.scroll-spacer');
+      if (!scaled || !spacer) return;
+
+      const rect = scaled.getBoundingClientRect();
+      spacer.style.width = `${Math.ceil(rect.width)}px`;
+    },
+    viewerStyle() {
+      return { transform: `scale(${this.zoom})` };
+    },
     // Retorna true si todos los no firmados están seleccionados
     allSelected() {
       const unsigned = this.documents.filter(doc => !doc.signed);
@@ -144,7 +161,7 @@ window.app = new Vue({
                   this.onWebDisconnectedLong();
                 }
                 this._webPresenceTimer = null;
-              }, 4000);
+              }, 500);
             }
           }
         }
@@ -159,7 +176,7 @@ window.app = new Vue({
         title: 'Conexión con la web perdida',
         html: 'Reintentando… <b>3</b> s',
         icon: 'warning',
-        timer: 5000,
+        timer: 3000,
         timerProgressBar: true,
         allowOutsideClick: false,
         allowEscapeKey: false,
@@ -182,21 +199,21 @@ window.app = new Vue({
 
     // Aplica fallback de UI si no vuelve la conexión
     handleWebLossAction() {
-      try {
-        this.selected = [];
-        this.allSigned = this.documents.every(d => d.signed === true);
-        if (this.currentComponent !== 'files') this.changeComponent('files');
-        Swal.fire({
-          icon: 'info',
-          title: 'Sin conexión',
-          text: 'No se pudo restablecer la conexión.',
-          timer: 2000,
-          showConfirmButton: false
-        });
-        this.changeComponent('home');
-      } catch (e) {
-        // Silencioso en producción
-      }
+      this.changeComponent('home');
+      // try {
+      //   this.selected = [];
+      //   this.allSigned = this.documents.every(d => d.signed === true);
+      //   if (this.currentComponent !== 'files') this.changeComponent('files');
+      //   Swal.fire({
+      //     icon: 'info',
+      //     title: 'Sin conexión',
+      //     text: 'No se pudo restablecer la conexión.',
+      //     timer: 2000,
+      //     showConfirmButton: false
+      //   });
+      //   this.changeComponent('home');
+      // } catch (e) {
+      // }
     },
 
     // Registra decisión temporal (acepto/no acepto) por documento
@@ -287,6 +304,7 @@ window.app = new Vue({
             this.configProject = JSON.parse(localStorage.getItem('config') || '{}');
 
             if (name === 'signature') {
+              this.zoom = 1;
               this.decisionTmp = {};
               this.initializeSignature();
             } else if (name === 'home') {
@@ -324,13 +342,13 @@ window.app = new Vue({
                     signingScope: doc.signingScope || 'per-doc',
                     editScope: doc.editScope || 'per-doc',
                     locked: !!doc.locked,
-
                     html: cleanHtml,
                     signed: false,
                     status: false,
                     signature: '',
                     base64Str: base64str,
                     base64: doc.base64,
+                    editable: doc.editable,
                   };
                 });
               }
@@ -348,9 +366,6 @@ window.app = new Vue({
       this.canvas = document.getElementById('draw-canvas');
       this.ctx = this.canvas.getContext('2d');
       this.configureCanvas();
-
-      const content = document.querySelector('.content');
-      if (content) content.style.zoom = '100%';
 
       if (this.signaturePending) {
         const img = new Image();
@@ -398,14 +413,18 @@ window.app = new Vue({
     // Inicia un trazo con mouse
     initializeDrawing(e) {
       this.isDrawing = true;
+      const rect = this.canvas.getBoundingClientRect();
+      const scaleX = this.canvas.width / rect.width;
+      const scaleY = this.canvas.height / rect.height;
       this.ctx.beginPath();
-      this.ctx.moveTo(e.offsetX, e.offsetY);
+      this.ctx.moveTo((e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY);
     },
-
-    // Dibuja mientras el mouse está presionado
     draw(e) {
       if (!this.isDrawing) return;
-      this.ctx.lineTo(e.offsetX, e.offsetY);
+      const rect = this.canvas.getBoundingClientRect();
+      const scaleX = this.canvas.width / rect.width;
+      const scaleY = this.canvas.height / rect.height;
+      this.ctx.lineTo((e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY);
       this.ctx.stroke();
     },
 
@@ -461,23 +480,21 @@ window.app = new Vue({
     },
 
     // Aumenta/Reduce/Ajusta zoom de la vista de firma
-    addZoom() { this.ajustZoom(10); },
-    lessZoom() { this.ajustZoom(-10); },
-    ajustZoom(valor) {
-      const content = document.getElementsByClassName('page-signature')[0];
-      if (!content) return;
-      let currentZoom = parseInt(content.style.zoom) || 100;
-      currentZoom = Math.max(100, Math.min(150, currentZoom + valor));
-      content.style.zoom = currentZoom + '%';
+    addZoom() { this.setZoom(this.zoom + 0.1); },
+    lessZoom() { this.setZoom(this.zoom - 0.1); },
+
+    setZoom(z) {
+      const prev = this.zoom || 1;
+      const clamped = Math.max(0.75, Math.min(1.5, Number(z) || 1));
+      const next = Number(clamped.toFixed(1));
+      if (next === prev) return;
+      if (next >= 1) {
+        this.zoom = next;
+      }
     },
 
     // Guarda firma(s) en los documentos seleccionados y regresa a la lista
     async save() {
-      if (this.isCanvasEmpty()) {
-        await Swal.fire({ title: '¡Error!', text: 'Debe firmar antes de guardar.', icon: 'error', confirmButtonText: 'Aceptar', confirmButtonColor: '#f44336' });
-        return;
-      }
-
       // ---- NUEVO: Validaciones de decisión ----
       const selected = this.selected || [];
 
@@ -499,10 +516,11 @@ window.app = new Vue({
         d.decisionScope !== 'group' &&
         ![true, false].includes(this.decisionTmp?.[d.id])
       );
+
       if (missingPerDoc.length) {
         await Swal.fire({
           title: 'Warning',
-          text: `Selecciona acepto o no acepto en: ${missingPerDoc.map(f => f.name).join(', ')}`,
+          text: `Debe aceptar o rechazar el documento: ${missingPerDoc.map(f => f.name).join(', ')}`,
           icon: 'warning',
           confirmButtonText: 'Entendido',
           confirmButtonColor: '#f44336'
@@ -510,10 +528,15 @@ window.app = new Vue({
         return;
       }
 
+      if (this.isCanvasEmpty()) {
+        await Swal.fire({ title: '¡Error!', text: 'Debe firmar antes de guardar.', icon: 'error', confirmButtonText: 'Aceptar', confirmButtonColor: '#f44336' });
+        return;
+      }
+
       // Confirmación de guardado (igual que ya tenías)
       const confirm = await Swal.fire({
-        title: '¡Alerta!',
-        text: '¿Está seguro que desea guardar la firma?',
+        title: '¡Confirmación!',
+        text: this.documents.every(d => d.editable === false) ? '¿Está seguro que desea guardar?. Al guardar su decisión no podrá modificarla.' : '¿Está seguro que desea guardar?',
         icon: 'info',
         showCancelButton: true,
         confirmButtonText: 'Sí',
@@ -578,6 +601,8 @@ window.app = new Vue({
       this.selected = [];
       this.groupDecision = null;            // <- reset decisión de grupo
       this.allSigned = this.documents.every(doc => doc.signed === true);
+
+      if (this.documents.every(d => d.editable === false)) this.sendDocuments(); return;
       this.changeComponent('files');
     },
 
@@ -835,5 +860,20 @@ window.app = new Vue({
       this.selectOpen = false;
     },
 
+    getScrollEl() {
+      // Prioridad a ref si existe en el DOM
+      return document.querySelector('.viewer')
+        || document.querySelector('.page-signature')
+        || document.querySelector('.content-page')
+        || document.scrollingElement;
+    },
+    // Paso hacia abajo/arriba: dir = 1 (abajo) o -1 (arriba)
+    scrollStep(dir = 1) {
+      const el = this.getScrollEl();
+      if (!el) return;
+      const base = Math.max(200, Math.floor(el.clientHeight * 0.5));
+      const step = base / (this.zoom || 1);
+      el.scrollBy({ top: dir * step, behavior: 'smooth' });
+    }
   }
 });

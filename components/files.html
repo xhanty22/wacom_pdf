@@ -5,7 +5,7 @@
     </div>
   </div>
   <div class="content">
-
+    
     <div class="content-page">
       <div class="page-documents">
         <h2 class="main-title">Firmar documentos</h2>
@@ -55,7 +55,7 @@
                         </span>
                       </span>
 
-                      <img v-if="doc.editScope !== 'group'" class="img-edit" src="assets/img/edit.png" alt=""
+                      <img v-if="doc.editScope !== 'group' && doc.editable" class="img-edit" src="assets/img/edit.png" alt=""
                         @click="$root.signAgain(doc)">
                     </div>
                   </div>
@@ -65,7 +65,7 @@
           </ul>
         </div>
         <div class="div-center">
-          <button class="signature-button" v-if="$root.allSigned"
+          <button class="signature-button" v-if="$root.allSigned && $root.documents.every(doc => doc.editable === true)"
             @click="$root.editSelectedGroup">
             <img src="assets/img/edit-white.png" alt="Icono"> Editar documentos
           </button>

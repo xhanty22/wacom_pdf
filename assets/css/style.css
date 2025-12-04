@@ -262,9 +262,14 @@ hr {
   margin: 2rem auto 1rem;
 }
 
-.clear-button {
+.clear-button.empty {
   background-color: var(--info-color);
 }
+
+.clear-button.signed {
+  background-color: var(--danger-color);
+}
+
 
 canvas {
   touch-action: none;
@@ -386,9 +391,9 @@ canvas {
 }
 
 label {
-  display: flex;
-  font-size: 1.4rem;
-  width: 100%;
+  /* display: flex; */
+  /* font-size: 1.4rem; */
+  /* width: 100%; */
 }
 
 .row-document {
@@ -396,6 +401,7 @@ label {
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  font-size: 1.4rem;
 }
 
 .left-content {

@@ -29,16 +29,16 @@
 
                 <div class="fila-decision" v-if="file.requireDecision && file.decisionScope !== 'group'">
                   <div class="group-buttons">
-                    <button type="button" class="btn-decision aprobar" :class="{ 
-          active: $root.decisionTmp[file.id] === true,
-          dim:    $root.decisionTmp[file.id] === false 
+                    <button type="button" class="btn-decision" :class="{ 
+          aprobar: $root.decisionTmp[file.id] === true,
+          active:    $root.decisionTmp[file.id] === false 
         }" @click="$root.setDecision(file.id, true)">
                       <img src="assets/img/approved.png" alt="Icono">Acepto
                     </button>
 
-                    <button type="button" class="btn-decision rechazar" :class="{
-          active: $root.decisionTmp[file.id] === false,
-          dim:    $root.decisionTmp[file.id] === true
+                    <button type="button" class="btn-decision" :class="{
+          rechazar: $root.decisionTmp[file.id] === false,
+          active:    $root.decisionTmp[file.id] === true
         }" @click="$root.setDecision(file.id, false)">
                       <img src="assets/img/cancel.png" alt="Icono">No acepto
                     </button>
@@ -66,10 +66,10 @@
               </div>
 
               <div class="div-signature">
-                <canvas id="draw-canvas" height="230" width="500" class="signature-pad"></canvas>
+                <canvas id="draw-canvas" height="230" width="500" class="signature-pad" @pointerup="$root.validateCanvas"></canvas>
                 <div class="row">
                   <div class="col">
-                    <button class="clear-button" @click="$root.clearCanvas">
+                    <button class="clear-button" :class="{ signed: $root.canvaIsNull === false, empty: $root.canvaIsNull === true }" @click="$root.clearCanvas">
                       <img src="assets/img/clear.png" alt="Icono"> Limpiar</button>
 
                   </div>

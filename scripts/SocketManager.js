@@ -21,6 +21,7 @@ const initSocketManager = async () => {
   // === CONFIGURACIÓN SOCKET ===
   // Puede ser sobrescrito con localStorage (socket.ip, socket.port)
   const IP = localStorage.getItem("socket.ip") || "172.29.110.238";
+  // const IP = localStorage.getItem("socket.ip") || "172.29.110.83";
   const PORT = localStorage.getItem("socket.port") || "8594";
   const SOCKET_URL = `http://${IP}:${PORT}`;
 

@@ -11,6 +11,7 @@ window.app = new Vue({
     currentComponent: '',
 
     // Canvas firma
+    canvaIsNull: true,
     canvas: null,
     ctx: null,
     isDrawing: false,
@@ -52,7 +53,7 @@ window.app = new Vue({
   async mounted() {
     // Hotkey debug: Ctrl+Shift+D para limpiar sesión local
     window.addEventListener('keydown', (e) => {
-      if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+      if (e.ctrlKey && e.shiftKey && (e.key === 'D' || e.key === 'd')) {
         Swal.fire({
           title: '¡Alerta!',
           text: '¿Está seguro que desea eliminar la sesión?',
@@ -464,6 +465,7 @@ window.app = new Vue({
     clearCanvas() {
       this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this._blankCache.data = null;
+      this.validateCanvas();
     },
 
     // Confirma y vuelve a la lista de archivos desde la vista de firma
@@ -519,7 +521,7 @@ window.app = new Vue({
 
       if (missingPerDoc.length) {
         await Swal.fire({
-          title: 'Warning',
+          title: '¡Alerta!',
           text: `Debe aceptar o rechazar el documento: ${missingPerDoc.map(f => f.name).join(', ')}`,
           icon: 'warning',
           confirmButtonText: 'Entendido',
@@ -536,7 +538,7 @@ window.app = new Vue({
       // Confirmación de guardado (igual que ya tenías)
       const confirm = await Swal.fire({
         title: '¡Confirmación!',
-        text: this.documents.every(d => d.editable === false) ? '¿Está seguro que desea guardar?. Al guardar su decisión no podrá modificarla.' : '¿Está seguro que desea guardar?',
+        text: this.documents.every(d => d.editable === false) ? '¿Está seguro que desea guardar? Al guardar su decisión no podrá modificarla.' : '¿Está seguro que desea guardar?',
         icon: 'info',
         showCancelButton: true,
         confirmButtonText: 'Sí',
@@ -643,6 +645,14 @@ window.app = new Vue({
       this.$root.changeComponent('signature');
     },
 
+    validateCanvas() {
+      if (this.isCanvasEmpty()) {
+        this.canvaIsNull = true;
+      } else {
+        this.canvaIsNull = false;
+      }
+    },
+
     // Verifica si el canvas está en blanco (usa caché por rendimiento)
     isCanvasEmpty() {
       if (!this.canvas) return true;
@@ -675,7 +685,6 @@ window.app = new Vue({
       }
       const batchId = groups[0];
       const docs = this.documents.filter(d => d.batchId === batchId);
-      console.log(docs);
       docs.forEach(doc => {
         doc.signed = false;
         doc.status = 0;

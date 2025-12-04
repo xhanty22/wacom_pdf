@@ -5,7 +5,7 @@
     </div>
   </div>
   <div class="content">
-    
+
     <div class="content-page">
       <div class="page-documents">
         <h2 class="main-title">Firmar documentos</h2>
@@ -22,45 +22,46 @@
           <ul>
             <li v-for="(doc, index) in $root.documents" :key="index">
               <label>
-                <template v-if="!doc.signed">
-                  <div class="row-document">
-                    <span class="left-content">
-                      <input type="checkbox" class="input-checkbox" :checked="$root.isChecked(doc)"
-                        :disabled="$root.isDisabled(doc)" @change="$root.onToggle(doc, $event)" />
-                      {{ doc.name }}
-                    </span>
+                <input type="checkbox" class="input-checkbox" :checked="$root.isChecked(doc)"
+                  :disabled="$root.isDisabled(doc)" @change="$root.onToggle(doc, $event)" />
+              </label>
+              <template v-if="!doc.signed">
+                <div class="row-document">
+                  <span class="left-content">
 
-                    <span v-if="doc.requireDecision" class="badge-decision is-pending">
-                      Requiere aceptación
-                    </span>
-                  </div>
-                </template>
+                    {{ doc.name }}
+                  </span>
 
-                <template v-else>
-                  <div class="row-document">
-                    <span class="left-content">
-                      <img class="img-signed" src="assets/img/signed.png" alt="">
-                      {{ doc.name }}
-                    </span>
+                  <span v-if="doc.requireDecision" class="badge-decision is-pending">
+                    Requiere aceptación
+                  </span>
+                </div>
+              </template>
 
-                    <div style="display: flex;">
-                      <span v-if="doc.requireDecision" class="badge-decision" :class="{
+              <template v-else>
+                <div class="row-document">
+                  <span class="left-content">
+                    <img class="img-signed" src="assets/img/signed.png" alt="">
+                    {{ doc.name }}
+                  </span>
+
+                  <div style="display: flex;">
+                    <span v-if="doc.requireDecision" class="badge-decision" :class="{
                             'is-approved': doc.decision === true,
                             'is-rejected': doc.decision === false,
                             'is-pending': doc.decision === null || doc.decision === undefined
                           }">
-                        <span class="label">
-                          {{ doc.decision === true ? 'Aceptado' : (doc.decision === false ? 'No aceptado' : 'Aceptado')
-                          }}
-                        </span>
+                      <span class="label">
+                        {{ doc.decision === true ? 'Aceptado' : (doc.decision === false ? 'No aceptado' : 'Aceptado')
+                        }}
                       </span>
+                    </span>
 
-                      <img v-if="doc.editScope !== 'group' && doc.editable" class="img-edit" src="assets/img/edit.png" alt=""
-                        @click="$root.signAgain(doc)">
-                    </div>
+                    <img v-if="doc.editScope !== 'group' && doc.editable" class="img-edit" src="assets/img/edit.png"
+                      alt="" @click="$root.signAgain(doc)">
                   </div>
-                </template>
-              </label>
+                </div>
+              </template>
             </li>
           </ul>
         </div>

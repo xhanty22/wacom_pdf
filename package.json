@@ -63,7 +63,7 @@
     "publish": [
       {
         "provider": "generic",
-        "url": "http://localhost/updates/complementos/win/"
+        "url": "https://web.caris.com.co/tablet/updates/siamo/"
       }
     ]
   }

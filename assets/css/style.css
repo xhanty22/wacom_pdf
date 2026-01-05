@@ -238,6 +238,107 @@ p {
 .div-signature {
   text-align: center;
   margin-top: 2rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Contenedor para firma única (canvas centrado, info debajo) */
+.signature-single-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.signature-single-canvas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  /* Canvas y texto centrados verticalmente */
+}
+
+.signature-info-below {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+/* Firma dual (paciente y responsable) */
+.div-signature-dual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2rem;
+  gap: 2rem;
+  width: 100%;
+}
+
+.signature-dual-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 2rem;
+}
+
+.signature-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+  gap: 1rem;
+}
+
+.signature-info {
+  font-size: 1.2rem;
+  width: 100%;
+}
+
+.signature-info p {
+  margin: 0 !important;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.signature-info p strong {
+  font-weight: 600;
+}
+
+.signature-save-row {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+}
+
+@media (min-width: 768px) {
+  .signature-dual-container {
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: flex-start;
+    gap: 3rem;
+  }
+  
+  .signature-column {
+    flex: 1;
+    max-width: 45%;
+    min-width: 400px;
+  }
+  
+  .signature-column .signature-pad {
+    width: 100%;
+    max-width: 100%;
+  }
 }
 
 hr {
@@ -259,7 +360,6 @@ hr {
   height: 230px;
   border: 2px solid #9e9e9e;
   border-radius: 4px;
-  margin: 2rem auto 1rem;
 }
 
 .clear-button.empty {

@@ -65,19 +65,48 @@
                 </div>
               </div>
 
-              <div class="div-signature">
-                <canvas id="draw-canvas" height="230" width="500" class="signature-pad" @pointerup="$root.validateCanvas"></canvas>
-                <div class="row">
-                  <div class="col">
+              <!-- Firma única (sin responsable) -->
+              <div class="div-signature" v-if="!$root.hasResponsable">
+                <div class="signature-single-container">
+                  <div class="signature-single-canvas">
+                    <canvas id="draw-canvas" height="230" width="500" class="signature-pad" @pointerup="$root.validateCanvas"></canvas>
                     <button class="clear-button" :class="{ signed: $root.canvaIsNull === false, empty: $root.canvaIsNull === true }" @click="$root.clearCanvas">
                       <img src="assets/img/clear.png" alt="Icono"> Limpiar</button>
-
                   </div>
-                  <div class="col">
-                    <button class="signature-button" @click="$root.save">
-                      <img src="assets/img/save.png" alt="Icono"> Guardar</button>
+                </div>
+                <div class="signature-save-row">
+                  <button class="signature-button" @click="$root.save">
+                    <img src="assets/img/save.png" alt="Icono"> Guardar</button>
+                </div>
+              </div>
 
+              <!-- Firmas dobles (con responsable) -->
+              <div class="div-signature-dual" v-if="$root.hasResponsable">
+                <div class="signature-dual-container">
+                  <div class="signature-column">
+                    <canvas id="draw-canvas" height="230" width="500" class="signature-pad" @pointerup="$root.validateCanvas"></canvas>
+                    <div class="signature-info">
+                      <p><strong>{{ $root.pacienteData.nombreCompleto }}</strong></p>
+                      <p>{{ $root.pacienteData.desTIdentificacion }} - {{ $root.pacienteData.docIdentidad }}</p>
+                      <p><strong>Paciente</strong></p>
+                    </div>
+                    <button class="clear-button" :class="{ signed: $root.canvaIsNull === false, empty: $root.canvaIsNull === true }" @click="$root.clearCanvas">
+                      <img src="assets/img/clear.png" alt="Icono"> Limpiar</button>
                   </div>
+                  <div class="signature-column">
+                    <canvas id="draw-canvas-responsable" height="230" width="500" class="signature-pad" @pointerup="$root.validateCanvasResponsable"></canvas>
+                    <div class="signature-info">
+                      <p><strong>{{ $root.responsableData?.nombreCompleto || '' }}</strong></p>
+                      <p>{{ $root.responsableData.desTIdentificacionResponsable }} - {{ $root.responsableData?.documento || '' }}</p>
+                      <p><strong>Responsable</strong></p>
+                    </div>
+                    <button class="clear-button" :class="{ signed: $root.canvaResponsableIsNull === false, empty: $root.canvaResponsableIsNull === true }" @click="$root.clearCanvasResponsable">
+                      <img src="assets/img/clear.png" alt="Icono"> Limpiar</button>
+                  </div>
+                </div>
+                <div class="signature-save-row">
+                  <button class="signature-button" @click="$root.save">
+                    <img src="assets/img/save.png" alt="Icono"> Guardar</button>
                 </div>
               </div>
               <div class="scroll-spacer" aria-hidden="true"></div>

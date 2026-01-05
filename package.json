@@ -1,9 +1,9 @@
 {
   "name": "complementoshumanos",
   "productName": "Complementos Humanos",
-  "version": "1.0.0",
-  "author": "Develop",
-  "description": "Gestión Interna de Complementos Humanos",
+  "version": "1.0.1",
+  "author": "Carlos Gomez",
+  "description": "Firma de documentos",
   "main": "main.js",
   "scripts": {
     "start": "electron-forge start",
@@ -30,15 +30,32 @@
     "electronmon": "^2.0.3"
   },
   "build": {
-    "appId": "com.complementoshumanos.app",
+    "appId": "com.complementoshumanos_stage.app",
     "productName": "Complementos Humanos",
+    "compression": "maximum",
     "directories": {
       "output": "dist"
     },
     "files": [
       "**/*",
       "!dist/**",
-      "!node_modules/.cache/**"
+      "!node_modules/.cache/**",
+      "!**/*.md",
+      "!**/*.txt",
+      "!**/test/**",
+      "!**/tests/**",
+      "!**/*.test.js",
+      "!**/*.spec.js",
+      "!versiones/**",
+      "!**/.git/**",
+      "!**/.gitignore",
+      "!**/.editorconfig",
+      "!**/.eslintrc*",
+      "!**/.prettierrc*",
+      "!forge.config.js",
+      "!**/README*",
+      "!**/CHANGELOG*",
+      "!**/LICENSE*"
     ],
     "win": {
       "target": [
@@ -50,7 +67,7 @@
         }
       ],
       "icon": "assets/icon.ico",
-      "artifactName": "ComplementosHumanos-${version}-Setup.${ext}"
+      "artifactName": "ComplementosHumanos_stage-${version}-Setup.${ext}"
     },
     "nsis": {
       "oneClick": true,
@@ -63,7 +80,7 @@
     "publish": [
       {
         "provider": "generic",
-        "url": "https://web.caris.com.co/tablet/updates/siamo/"
+        "url": "http://stage.siamo.com.co/tablet/updates/siamo/"
       }
     ]
   }

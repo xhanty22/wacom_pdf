@@ -1,15 +1,17 @@
 {
   "name": "complementoshumanos",
   "productName": "Complementos Humanos",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "Carlos Gomez",
   "description": "Firma de documentos",
   "main": "main.js",
   "scripts": {
     "start": "electron-forge start",
-    "dist": "electron-builder -w",
-    "release": "electron-builder -w -p always",
-     "dev": "electronmon ."
+    "dist": "node scripts/update-package-config.js && electron-builder -w",
+    "dist:dev": "node scripts/update-package-config.js --development && electron-builder -w",
+    "dist:prod": "node scripts/update-package-config.js --production && electron-builder -w",
+    "release": "node scripts/update-package-config.js --production && electron-builder -w -p always",
+    "dev": "electronmon ."
   },
   "dependencies": {
     "electron-log": "^5.2.2",

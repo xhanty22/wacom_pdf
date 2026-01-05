@@ -1,0 +1,17 @@
+{
+  "socket": {
+    "ip": "socket.complementoshumanos.com",
+    "port": "",
+    "path": "/socket.io"
+  },
+  "updateUrl": "http://web.caris.com.co/tablet/updates/siamo/",
+  "images": {
+    "siamo": "https://web.caris.com.co/assets/img/loginCover.jpg",
+    "sirhu": "assets/img/home/one.jpg"
+  },
+  "build": {
+    "appId": "com.complementoshumanos.app",
+    "artifactName": "ComplementosHumanos-${version}-Setup.${ext}"
+  },
+  "environment": "production"
+}

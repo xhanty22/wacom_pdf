@@ -3,3 +3,4 @@ dist/*
 package-lock.json
 out/
 versiones/
+app.config.json

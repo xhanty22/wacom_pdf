@@ -1,15 +1,110 @@
-const { app, BrowserWindow, screen, dialog } = require("electron");
+const { app, BrowserWindow, screen, dialog, ipcMain } = require("electron");
 const path = require("path");
 const { autoUpdater } = require("electron-updater");
 const log = require("electron-log");
 const os = require("os");
 const fs = require("fs");
 
+// Leer versión del package.json
+const packageJson = require("./package.json");
+const APP_VERSION = packageJson.version;
+
+// ============================================================================
+// CONFIGURACIÓN DE VARIABLES DE ENTORNO
+// ============================================================================
+let appConfig = {};
+let envFile = '';
+
+// Intentar cargar app.config.json primero (si existe, fue copiado durante el build)
+const appConfigPath = path.join(__dirname, 'app.config.json');
+if (fs.existsSync(appConfigPath)) {
+  try {
+    appConfig = require('./app.config.json');
+    envFile = 'app.config.json';
+  } catch (error) {
+    log.error(`Error leyendo app.config.json:`, error);
+  }
+}
+
+// Si no existe app.config.json, usar la lógica de detección
+if (!appConfig || Object.keys(appConfig).length === 0) {
+  let isDevelopment;
+  
+  if (!app.isPackaged) {
+    // No empaquetado → siempre desarrollo
+    isDevelopment = true;
+    envFile = 'config.development.json';
+  } else {
+    // Empaquetado → intentar detectar por appId
+    const currentAppId = packageJson.build?.appId || '';
+    isDevelopment = currentAppId.includes('_stage');
+    envFile = isDevelopment ? 'config.development.json' : 'config.production.json';
+  }
+  
+  try {
+    appConfig = require(`./${envFile}`);
+  } catch (error) {
+    log.error(`Error cargando configuración desde ${envFile}:`, error);
+    // Marcar error para mostrar mensaje cuando app esté lista
+    app.once('ready', () => {
+      dialog.showMessageBoxSync({
+        type: "error",
+        title: "Error de Configuración",
+        message: `No se pudo cargar la configuración desde ${envFile}.`,
+        detail: error.message || "La aplicación no puede continuar sin la configuración.",
+        buttons: ["Aceptar"]
+      });
+      app.quit();
+    });
+    appConfig = null;
+  }
+}
+
+// Validar que la configuración tenga los campos necesarios (sin valores por defecto)
+if (appConfig && Object.keys(appConfig).length > 0) {
+  if (!appConfig.socket || !appConfig.socket.ip) {
+    log.error(`Error: La configuración en ${envFile || 'app.config.json'} no tiene socket.ip definido`);
+    // Marcar error para mostrar mensaje cuando app esté lista
+    app.once('ready', () => {
+      dialog.showMessageBoxSync({
+        type: "error",
+        title: "Error de Configuración",
+        message: `La configuración en ${envFile || 'app.config.json'} no tiene socket.ip definido.`,
+        detail: "La aplicación no puede continuar sin la configuración correcta.",
+        buttons: ["Aceptar"]
+      });
+      app.quit();
+    });
+    // No continuar con la inicialización
+    appConfig = null;
+  }
+} else {
+  log.error(`Error: No se pudo cargar ninguna configuración`);
+  app.once('ready', () => {
+    dialog.showMessageBoxSync({
+      type: "error",
+      title: "Error de Configuración",
+      message: `No se pudo cargar la configuración de la aplicación.`,
+      detail: "La aplicación no puede continuar sin la configuración.",
+      buttons: ["Aceptar"]
+    });
+    app.quit();
+  });
+  appConfig = null;
+}
+
+// Configurar URL de actualizaciones
+if (appConfig && app.isPackaged && appConfig.updateUrl) {
+  autoUpdater.setFeedURL({
+    provider: 'generic',
+    url: appConfig.updateUrl
+  });
+}
+
 // ============================================================================
 // CONFIGURACIÓN PRINCIPAL
 // ============================================================================
-const VALIDATE_TABLET_CONNECTION = true; // Activa/desactiva validación de tablet Wacom (1280x800)
-
+const VALIDATE_TABLET_CONNECTION = true;
 // ============================================================================
 // VARIABLES GLOBALES
 // ============================================================================
@@ -296,10 +391,11 @@ function setupAutoUpdater() {
       autoUpdater.on("update-downloaded", () => {
         log.info("update-downloaded");
         updateDownloaded = true;
-        // Si la ventana ya existe, mostrar el diálogo inmediatamente
-        if (mainWindow && !mainWindow.isDestroyed()) {
-          showUpdateDialog();
-        }
+        // Reiniciar automáticamente sin diálogo
+        log.info("Reiniciando aplicación para instalar actualización...");
+        setTimeout(() => {
+          autoUpdater.quitAndInstall();
+        }, 1000); // Pequeño delay para asegurar que todo esté listo
       });
     }
 
@@ -342,29 +438,11 @@ function setupAutoUpdater() {
   });
 }
 
-function showUpdateDialog() {
-  if (mainWindow && !mainWindow.isDestroyed()) {
-    const choice = dialog.showMessageBoxSync(mainWindow, {
-      type: "question",
-      buttons: ["Reiniciar ahora", "Luego"],
-      defaultId: 0,
-      message: "Actualización lista",
-      detail: "Se instalará al reiniciar la aplicación."
-    });
-    if (choice === 0) {
-      autoUpdater.quitAndInstall();
-    }
-  }
-}
 
 // ============================================================================
 // CREACIÓN Y GESTIÓN DE VENTANA PRINCIPAL
 // ============================================================================
 
-// Valida tablet y crea ventana. Maneja diferentes escenarios:
-// - Apertura manual sin tablet → muestra mensaje
-// - Cambio de usuario → cierra sin mensaje
-// - Desconexión física → cierra sin mensaje
 function createMainWindow() {
   const wasClosedByUserSwitch = getUserSwitchFlag();
   
@@ -434,6 +512,24 @@ function createMainWindowInternal() {
   mainWindow.setFullScreen(true);
   mainWindow.loadFile("index.html");
 
+  // Inyectar versión y configuración después de que se carga el HTML
+  mainWindow.webContents.once('did-finish-load', () => {
+    if (!appConfig) {
+      log.error('No hay configuración disponible para inyectar');
+      return;
+    }
+    
+    mainWindow.webContents.executeJavaScript(`
+      const versionElement = document.querySelector('.version-indicator__text');
+      if (versionElement) {
+        versionElement.textContent = 'v${APP_VERSION}';
+      }
+      
+      // Exponer configuración al renderer (SOLO desde archivos de configuración, sin valores por defecto)
+      window.appConfig = ${JSON.stringify(appConfig)};
+    `).catch(err => log.error('Error inyectando versión/config:', err));
+  });
+
   appIsRunning = true;
   isManualStart = false;
   
@@ -448,10 +544,14 @@ function createMainWindowInternal() {
     setupDisplayMonitoring();
   }
 
-  //mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 
+  // Si hay actualización pendiente al iniciar, reiniciar automáticamente
   if (app.isPackaged && updateDownloaded) {
-    showUpdateDialog();
+    log.info("Actualización pendiente detectada al iniciar, reiniciando...");
+    setTimeout(() => {
+      autoUpdater.quitAndInstall();
+    }, 2000); // Delay para que la ventana se cargue completamente
   }
 }
 
@@ -479,6 +579,11 @@ if (!gotTheLock) {
 }
 
 app.whenReady().then(async () => {
+  // Si no hay configuración válida, no continuar
+  if (!appConfig) {
+    return; // El mensaje de error ya se mostró en el catch/validación
+  }
+  
   // Configurar inicio automático en Windows
   if (app.isPackaged && process.platform === 'win32') {
     app.setLoginItemSettings({

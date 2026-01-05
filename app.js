@@ -30,8 +30,16 @@ window.app = new Vue({
 
     // Opciones fijas
     optionsProject: [
-      { value: 1, label: 'SIAMO', imageDefault: 'https://web.caris.com.co/assets/img/loginCover.jpg' },
-      { value: 2, label: 'SIRHU', imageDefault: 'assets/img/home/one.jpg' }
+      { 
+        value: 1, 
+        label: 'SIAMO', 
+        imageDefault: (window.appConfig?.images?.siamo || 'https://web.caris.com.co/assets/img/loginCover.jpg')
+      },
+      { 
+        value: 2, 
+        label: 'SIRHU', 
+        imageDefault: (window.appConfig?.images?.sirhu || 'assets/img/home/one.jpg')
+      }
     ],
 
     // UI/Config
@@ -280,7 +288,8 @@ window.app = new Vue({
         this.validateConnection();
       }
     },
-
+    
+    // Reinicia la aplicación para aplicar actualización pendiente
     // Selecciona/deselecciona todos los documentos sin firmar
     toggleSelectAll() {
       const unsigned = this.documents.filter(doc => !doc.signed);
@@ -334,8 +343,6 @@ window.app = new Vue({
 
     // Cambia de componente y normaliza documentos recibidos
     changeComponent(name, docs = []) {
-      console.log(docs);
-
       fetch(`./components/${name}.html?vs=${Date.now()}`)
         .then(resp => resp.text())
         .then(html => {
@@ -1065,8 +1072,6 @@ window.app = new Vue({
         ...doc,
         signature: Array.isArray(doc.signature) ? doc.signature : (doc.signature ? [doc.signature] : [])
       }));
-      console.log(documentsToSend);
-      
 
       window.socket.emit('saveSignature', {
         documentsSigned: documentsToSend,

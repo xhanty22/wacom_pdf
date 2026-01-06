@@ -29,7 +29,7 @@ if (fs.existsSync(appConfigPath)) {
 // Si no existe app.config.json, usar la lógica de detección
 if (!appConfig || Object.keys(appConfig).length === 0) {
   let isDevelopment;
-  
+
   if (!app.isPackaged) {
     // No empaquetado → siempre desarrollo
     isDevelopment = true;
@@ -40,7 +40,7 @@ if (!appConfig || Object.keys(appConfig).length === 0) {
     isDevelopment = currentAppId.includes('_stage');
     envFile = isDevelopment ? 'config.development.json' : 'config.production.json';
   }
-  
+
   try {
     appConfig = require(`./${envFile}`);
   } catch (error) {
@@ -201,7 +201,7 @@ function closeAppSilently() {
   if (userCheckInterval) clearInterval(userCheckInterval);
   if (metricsChangedTimeout) clearTimeout(metricsChangedTimeout);
   if (focusLossTimeout) clearTimeout(focusLossTimeout);
-  
+
   periodicCheckInterval = null;
   userCheckInterval = null;
   metricsChangedTimeout = null;
@@ -231,7 +231,7 @@ function handleTabletDisconnected() {
   if (userCheckInterval) clearInterval(userCheckInterval);
   if (metricsChangedTimeout) clearTimeout(metricsChangedTimeout);
   if (focusLossTimeout) clearTimeout(focusLossTimeout);
-  
+
   periodicCheckInterval = null;
   userCheckInterval = null;
   metricsChangedTimeout = null;
@@ -299,7 +299,7 @@ function setupDisplayMonitoring() {
 // Verifica periódicamente si cambió el usuario de Windows
 function startUserCheck() {
   if (process.platform !== 'win32') return;
-  
+
   if (userCheckInterval) {
     clearInterval(userCheckInterval);
   }
@@ -445,7 +445,7 @@ function setupAutoUpdater() {
 
 function createMainWindow() {
   const wasClosedByUserSwitch = getUserSwitchFlag();
-  
+
   if (VALIDATE_TABLET_CONNECTION && !isTabletConnected()) {
     // Si fue cambio de usuario o reinicio automático → cerrar sin mensaje
     if (wasClosedByUserSwitch || !isManualStart) {
@@ -475,7 +475,7 @@ function createMainWindow() {
       }, 3000);
       return;
     }
-    
+
     app.quit();
     return;
   }
@@ -497,6 +497,10 @@ function createMainWindowInternal() {
   const displayToUse = wacomDisplay || screen.getPrimaryDisplay();
 
   mainWindow = new BrowserWindow({
+    frame: false,
+    fullscreen: true,
+    kiosk: true,
+    focusable: true,
     autoHideMenuBar: true,
     x: displayToUse.bounds.x,
     y: displayToUse.bounds.y,
@@ -518,7 +522,7 @@ function createMainWindowInternal() {
       log.error('No hay configuración disponible para inyectar');
       return;
     }
-    
+
     mainWindow.webContents.executeJavaScript(`
       const versionElement = document.querySelector('.version-indicator__text');
       if (versionElement) {
@@ -532,7 +536,7 @@ function createMainWindowInternal() {
 
   appIsRunning = true;
   isManualStart = false;
-  
+
   if (!initialUsername && process.platform === 'win32') {
     initialUsername = getCurrentUsername();
     log.info(`Usuario inicial guardado: ${initialUsername}`);
@@ -544,7 +548,7 @@ function createMainWindowInternal() {
     setupDisplayMonitoring();
   }
 
-  mainWindow.webContents.openDevTools();
+  //mainWindow.webContents.openDevTools();
 
   // Si hay actualización pendiente al iniciar, reiniciar automáticamente
   if (app.isPackaged && updateDownloaded) {
@@ -583,7 +587,7 @@ app.whenReady().then(async () => {
   if (!appConfig) {
     return; // El mensaje de error ya se mostró en el catch/validación
   }
-  
+
   // Configurar inicio automático en Windows
   if (app.isPackaged && process.platform === 'win32') {
     app.setLoginItemSettings({
@@ -598,7 +602,7 @@ app.whenReady().then(async () => {
   app.on("activate", async () => {
     if (BrowserWindow.getAllWindows().length === 0) {
       await setupAutoUpdater();
-      
+
       if (VALIDATE_TABLET_CONNECTION) {
         if (isTabletConnected()) {
           createMainWindow();

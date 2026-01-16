@@ -15,32 +15,35 @@ const APP_VERSION = packageJson.version;
 let appConfig = {};
 let envFile = '';
 
-// Intentar cargar app.config.json primero (si existe, fue copiado durante el build)
-const appConfigPath = path.join(__dirname, 'app.config.json');
-if (fs.existsSync(appConfigPath)) {
-  try {
-    appConfig = require('./app.config.json');
-    envFile = 'app.config.json';
-  } catch (error) {
-    log.error(`Error leyendo app.config.json:`, error);
+// Lógica de carga de configuración
+let isDevelopment;
+
+if (!app.isPackaged) {
+  // No empaquetado → siempre desarrollo (ignorar app.config.json si existe)
+  isDevelopment = true;
+  envFile = 'config.development.json';
+} else {
+  // Empaquetado → intentar cargar app.config.json primero (si existe, fue copiado durante el build)
+  const appConfigPath = path.join(__dirname, 'app.config.json');
+  if (fs.existsSync(appConfigPath)) {
+    try {
+      appConfig = require('./app.config.json');
+      envFile = 'app.config.json';
+    } catch (error) {
+      log.error(`Error leyendo app.config.json:`, error);
+    }
   }
-}
-
-// Si no existe app.config.json, usar la lógica de detección
-if (!appConfig || Object.keys(appConfig).length === 0) {
-  let isDevelopment;
-
-  if (!app.isPackaged) {
-    // No empaquetado → siempre desarrollo
-    isDevelopment = true;
-    envFile = 'config.development.json';
-  } else {
-    // Empaquetado → intentar detectar por appId
+  
+  // Si no existe app.config.json o no se pudo cargar, usar la lógica de detección por appId
+  if (!appConfig || Object.keys(appConfig).length === 0) {
     const currentAppId = packageJson.build?.appId || '';
     isDevelopment = currentAppId.includes('_stage');
     envFile = isDevelopment ? 'config.development.json' : 'config.production.json';
   }
+}
 
+// Si aún no hay configuración, cargar desde el archivo detectado
+if (!appConfig || Object.keys(appConfig).length === 0) {
   try {
     appConfig = require(`./${envFile}`);
   } catch (error) {
@@ -104,7 +107,7 @@ if (appConfig && app.isPackaged && appConfig.updateUrl) {
 // ============================================================================
 // CONFIGURACIÓN PRINCIPAL
 // ============================================================================
-const VALIDATE_TABLET_CONNECTION = true;
+const VALIDATE_TABLET_CONNECTION = false;
 // ============================================================================
 // VARIABLES GLOBALES
 // ============================================================================

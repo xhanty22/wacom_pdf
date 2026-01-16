@@ -31,14 +31,14 @@ body {
   margin: 0;
   padding: 0;
   user-select: none !important;
-  cursor: none !important;
+  /* cursor: none !important; */
   font-family: "Poppins" !important;
 }
 
 *,
 *::before,
 *::after {
-  cursor: none !important;
+  /* cursor: none !important; */
 }
 
 a,
@@ -52,17 +52,17 @@ summary,
 details,
 option,
 optgroup {
-  cursor: none !important;
+  /* cursor: none !important; */
 }
 
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
-  /* cursor: none; */
+  cursor: none;
 }
 
 .swal2-container,
 .swal2-container * {
-  cursor: none !important;
+  /* cursor: none !important; */
   font-family: "Poppins" !important;
 }
 
@@ -70,7 +70,7 @@ input[type="number"]::-webkit-outer-spin-button {
 input,
 textarea,
 [contenteditable="true"] {
-  cursor: none !important;
+  /* cursor: none !important; */
 }
 
 p {
@@ -716,7 +716,7 @@ button:disabled {
   width: 300px;
   /* igual que .form-input */
   font-family: "Poppins", sans-serif;
-  cursor: none !important;
+  /* cursor: none !important; */
 }
 
 .select-btn {
@@ -728,7 +728,7 @@ button:disabled {
   background: var(--white-color);
   outline: none;
   transition: border-color .3s ease;
-  cursor: none !important;
+  /* cursor: none !important; */
 }
 
 .select-btn:focus,
@@ -747,7 +747,7 @@ button:disabled {
   transform: translateY(-50%);
   pointer-events: none;
   font-size: 20px;
-  cursor: none !important;
+  /* cursor: none !important; */
 }
 
 .select-list {
@@ -764,13 +764,13 @@ button:disabled {
   padding: 6px 0;
   z-index: 1000;
   box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
-  cursor: none !important;
+  /* cursor: none !important; */
 }
 
 .select-item {
   padding: 8px 12px;
   line-height: 1.25;
-  cursor: none !important;
+  /* cursor: none !important; */
   user-select: none;
 }
 
@@ -799,7 +799,7 @@ button:disabled {
 /* Asegura ningún cursor también en el overlay de librerías */
 .select-wrap *,
 .select-list * {
-  cursor: none !important;
+  /* cursor: none !important; */
 }
 
 /* Botones de scroll */

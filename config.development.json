@@ -1,12 +1,12 @@
 {
   "socket": {
-    "ip": "http://172.29.110.238",
-    "port": "8594",
+    "ip": "socket.complementoshumanos.com",
+    "port": "",
     "path": "/socket.io"
   },
-  "updateUrl": "http://stage.siamo.com.co/tablet/updates/siamo/",
+  "updateUrl": "http://web.caris.com.co/tablet/updates/siamo/",
   "images": {
-    "siamo": "http://stage.siamo.com.co/assets/img/loginCover.jpg",
+    "siamo": "https://web.caris.com.co/assets/img/loginCover.jpg",
     "sirhu": "assets/img/home/one.jpg"
   },
   "build": {

@@ -1,6 +1,6 @@
 {
   "socket": {
-    "ip": "socket.complementoshumanos.com",
+    "ip": "http://socket.complementoshumanos.com",
     "port": "",
     "path": "/socket.io"
   },

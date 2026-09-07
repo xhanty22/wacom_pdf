@@ -1,7 +1,7 @@
 {
   "name": "complementoshumanos",
   "productName": "Complementos Humanos",
-  "version": "1.0.2",
+  "version": "1.0.4",
   "author": "Carlos Gomez",
   "description": "Firma de documentos",
   "main": "main.js",
@@ -32,7 +32,7 @@
     "electronmon": "^2.0.3"
   },
   "build": {
-    "appId": "com.complementoshumanos_stage.app",
+    "appId": "com.complementoshumanos.app",
     "productName": "Complementos Humanos",
     "compression": "maximum",
     "directories": {
@@ -69,7 +69,7 @@
         }
       ],
       "icon": "assets/icon.ico",
-      "artifactName": "ComplementosHumanos_stage-${version}-Setup.${ext}"
+      "artifactName": "ComplementosHumanos-${version}-Setup.${ext}"
     },
     "nsis": {
       "oneClick": true,
@@ -82,7 +82,7 @@
     "publish": [
       {
         "provider": "generic",
-        "url": "http://stage.siamo.com.co/tablet/updates/siamo/"
+        "url": "http://web.caris.com.co/tablet/updates/siamo/"
       }
     ]
   }

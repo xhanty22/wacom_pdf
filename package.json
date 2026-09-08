@@ -1,8 +1,8 @@
 {
   "name": "complementoshumanos",
   "productName": "Complementos Humanos",
-  "version": "1.0.4",
-  "author": "Carlos Gomez",
+  "version": "1.0.5",
+  "author": "Complementos Humanos",
   "description": "Firma de documentos",
   "main": "main.js",
   "scripts": {
